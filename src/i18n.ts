@@ -32,7 +32,7 @@ export function getLabel(lang:string):string {
   }
 }
 
-export const translatedLang = [
+export const AvailableLangs = [
     Lang.en,
     Lang.fr
 ]
