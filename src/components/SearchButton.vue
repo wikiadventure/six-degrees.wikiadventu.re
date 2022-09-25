@@ -1,5 +1,5 @@
 <template>
-    <button v-if="!isFetching" search-button @click="fetch">
+    <button v-if="!isFetching" :disabled="wiki.search.start.id == '' || wiki.search.end.id == ''" search-button @click="fetch">
         {{ t('search') }} !
     </button>
     <div v-else search-button-loader></div>
@@ -40,7 +40,7 @@
 </style>
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
-import { useAllShortestPaths } from '../store/search/index';
+import { useAllShortestPaths, wiki } from '../store/search/index';
 
 const { t } = useI18n({ useScope: 'local' });
 const {
