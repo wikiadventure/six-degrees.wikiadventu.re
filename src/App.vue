@@ -52,7 +52,7 @@ main {
     // max-width: 120ch;
     // position: relative;
   }
-  > .lang-switch {
+  > [lang-switch] {
     position: absolute;
     margin: 15px;
     top: 0;
