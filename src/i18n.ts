@@ -34,7 +34,9 @@ export function getLabel(lang:string):string {
 
 export const AvailableLangs = [
     Lang.en,
-    Lang.fr
+    Lang.fr,
+    Lang.de,
+    Lang.eo
 ]
 
 export const langLabel = computed(()=>{
