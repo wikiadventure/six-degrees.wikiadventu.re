@@ -36,7 +36,8 @@ export const AvailableLangs = [
     Lang.en,
     Lang.fr,
     Lang.de,
-    Lang.eo
+    Lang.eo,
+    Lang.it
 ]
 
 export const langLabel = computed(()=>{
