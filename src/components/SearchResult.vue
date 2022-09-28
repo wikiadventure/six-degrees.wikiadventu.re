@@ -42,7 +42,6 @@
 }
 [search-result-paths] {
     display: flex;
-    // jusyi-items: center;
     justify-content: center;
     flex-wrap: wrap;
     gap: 15px;
@@ -50,7 +49,7 @@
         border-radius: 15px;
         border: 1px solid #0003;
         max-width: 100%;
-        width: 50ch;
+        width: min(100%, 50ch);
         display: flex;
         flex-direction: column;
         

@@ -11,7 +11,7 @@
 <style lang="scss">
 [search-input-section] {
     display: grid;
-    gap: 15px;
+    gap: 2ch;
     width: 100%;
     align-self: stretch;
     margin: auto;
@@ -21,6 +21,13 @@
     grid-template-columns: minmax(0, 1fr) min-content minmax(0, 1fr);
     grid-auto-rows: min-content;
     place-items: center;
+    @media (max-width: 950px) {
+        grid-template-areas:    "p p p"
+                                "s s s"
+                                "→ → →"
+                                "e e e";
+        max-width: 70ch;
+    }
     > p {
         margin: 0;
         text-align: center;
