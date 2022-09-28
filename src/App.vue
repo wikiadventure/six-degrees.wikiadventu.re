@@ -35,8 +35,9 @@ import LangSwitch from './components/lang/LangSwitch.vue';
 }
 
 
-h1 {
+main h1 {
   margin: 2rem 0;
+  font-size: calc(3em + 5vw);
   text-align: center;
 }
 
