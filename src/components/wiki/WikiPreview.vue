@@ -24,28 +24,53 @@
   &:last-child {
     border: none;
   }
+  backdrop-filter: blur(2px);
+  background: #0001;
+  @at-root .body--dark & {
+    background: #fff1;
+  }
   .img {
     display: grid;
     grid-area: i;
     width: 80px;
     height: 80px;
-    background: hsla(0,0%,100%,0.5);
     place-items: center;
     background: none;
     border-radius: 3px;
+    position: relative;
+    background: #0004;
+    @at-root .body--dark & {
+      background: #fff4;
+    }
+    &:not(.none) {
+      filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff);
+      &:hover {
+        z-index: 5;
+        isolation: isolate;
+        img {
+          max-width: 100vmin;
+          max-height: 100vmin;
+          border-radius: 0;
+          filter: drop-shadow(0 0 3px #fff);
+          transition: filter .5s, max-height .5s .5s, max-width .5s .5s;
+        }
+      }
+    }
   }
   .img>img {
+    position: absolute;
     max-width: 80px;
     max-height: 80px;
     object-fit: cover;
     border-radius: 3px;
+    transition: filter 1s, max-height .5s 0s, max-width .5s 0s;
   }
   .img.none {
     border: 1px solid grey;
   }
   h3 {
     grid-area: t;
-    margin: 5px 15px;
+    margin: 0 15px;
     font-size: 1.5rem;
     line-height: 1.5rem;
     >* {
@@ -54,9 +79,21 @@
   }
   p {
     grid-area: d;
-    margin: 5px 15px;
+    margin: 0 15px;
+    padding-bottom: 2px;
     font-size: 1rem;
     line-height: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    max-height: 7ex;
+    transition: .5s max-height;
+    &:hover {
+      -webkit-line-clamp: 100;
+      max-height: 30ex;
+    }
   }
 }
 </style>

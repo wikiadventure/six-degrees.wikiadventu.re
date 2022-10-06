@@ -14,6 +14,7 @@
     font-size: 2rem;
     text-align: center;
     transition: all ease-in-out .2s;
+    cursor: pointer;
     &:hover {
         filter: brightness(1.1);
     }
@@ -21,7 +22,21 @@
         filter: brightness(0.95);
     }
 }
+
+.body--dark {
+    [search-button] {
+        border: 2px solid #fff;
+        color: #fff;
+        background: transparent;
+        filter: drop-shadow(0 0 5px cyan) drop-shadow(0 0 1px rgba(0, 255, 255, .3));
+        &:not([disabled]):hover {
+            filter: drop-shadow(0 0 5px cyan) drop-shadow(0 0 1px cyan);
+        }
+    }
+}
+
 [search-button-loader] {
+    padding: 25px;
     border: 5px solid #fff;
     filter: drop-shadow(0 0 5px cyan);
     text-align: center;
@@ -40,7 +55,7 @@
 </style>
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
-import { useAllShortestPaths, wiki } from '../store/search/index';
+import { useAllShortestPaths, wiki } from '../../store/search/index';
 
 const { t } = useI18n({ useScope: 'local' });
 const {

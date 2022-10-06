@@ -58,10 +58,10 @@
 }
 </style>
 <script lang="ts" setup>
-import preview from "./wiki/WikiPreview.vue";
-import { wiki } from '../store/search';
+import preview from "../wiki/WikiPreview.vue";
+import { wiki } from '../../store/search';
 import { useI18n } from 'vue-i18n';
-import { useMinutesSecondes } from '../composables/time/index';
+import { useMinutesSecondes } from '../../composables/time';
 import { toRefs } from '@vueuse/core';
 
 const { t } = useI18n({ useScope: 'local' });
@@ -72,16 +72,16 @@ console.log(toRefs(wiki.result));
 const { formatedTime } = useMinutesSecondes(toRefs(wiki.result).time!);
 </script>
 <i18n lang="yaml">
-    en:
-        description: >
-            {pathsLength} paths found of {degrees} degrees of separation 
-            from {start} to {end} in {time}
-        pathsAmong: paths among the
-        paths: path | paths
-    fr:
-        description: >
-            {pathsLength} chemins trouvés en {degrees} degrées de séparation 
-            de {start} à {end} en {time}
-        pathsAmong: chemins parmis les
-        paths: chemin | chemins 
-  </i18n>
+en:
+    description: >
+        {pathsLength} paths found of {degrees} degrees of separation 
+        from {start} to {end} in {time}
+    pathsAmong: paths among the
+    paths: path | paths
+fr:
+    description: >
+        {pathsLength} chemins trouvés en {degrees} degrées de séparation 
+        de {start} à {end} en {time}
+    pathsAmong: chemins parmis les
+    paths: chemin | chemins 
+</i18n>

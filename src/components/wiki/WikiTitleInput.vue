@@ -10,52 +10,66 @@
 </template>
 <style lang="scss">
 [wiki-title-input] {
+    --border: 1px solid #0ff5;
     width: 100%;
     // height: 2em;
     position: relative;
-    >input {
+    
+    > input {
+        border: var(--border);
         width: 100%;
         height: 3em;
         font-size: 1.5em;
         text-align: center;
+        backdrop-filter: blur(3px);
+        background: #0001;
+        color: #000;
+        @at-root .body--dark & {
+            background: #fff1;
+            color: #fff;
+        }
     }
     [wiki-title-suggest] {
         z-index: 2;
-        overflow: hidden;
+        backdrop-filter: blur(3px);
+        // overflow: hidden;
         position: absolute;
-        display: grid;
+        display: flex;
+        flex-direction: column;
         width: 100%;
-        // margin: 0 1%;
-        background: #7edcd8;
-        border: 1px solid #8885;
+        border: var(--border);
+        border-top: none;
         border-radius: 10px;
         .wiki-preview {
             background: inherit;
-            border-bottom: 1px solid #8885;
+            border-bottom: var(--border);
             cursor: pointer;
             &:last-child {
                 border-bottom: none;
             }
             &:hover {
-                filter: brightness(1.1);
+                backdrop-filter: brightness(1.5);
+                z-index: 5;
             }
         }
 
     }
     > .wiki-preview {
-        border: 1px solid #000;
-        border-top: 0;
+        border: var(--border);
+        border-top: none;
         border-radius: 0 0 15px 15px;
     }
 }
+
+
 </style>
 <script lang="ts" setup>
 import preview from "./WikiPreview.vue";
 import { loadSuggestions } from "../../store/wiki/actions";
-import { ref, watch, PropType, reactive } from 'vue';
+import { ref, watch, reactive } from 'vue';
 import { WikiSuggestion } from '../../store/wiki/type';
 import { toRefs, useVModel, watchDebounced } from '@vueuse/core'
-import { i18n, Lang } from "../../i18n";
+import { i18n } from "../../i18n";
 import { WikiPage } from '../../store/search';
 
 const props = defineProps<{

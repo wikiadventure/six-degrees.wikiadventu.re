@@ -73,32 +73,50 @@ export function useAllShortestPaths() {
 }
 
 watch(currentLang, v=>{
-    wiki.search.start.input = "";
-    wiki.search.start.id = "";
-    wiki.search.start.title = "";
-    wiki.search.start.thumbnail = undefined;
-    wiki.search.start.description = undefined;
+    const s = wiki.search.start;
+    s.input = "";
+    s.id = "";
+    s.title = "";
+    s.thumbnail = undefined;
+    s.description = undefined;
 
-    wiki.search.end.input = "";
-    wiki.search.end.id = "";
-    wiki.search.end.title = "";
-    wiki.search.end.thumbnail = undefined;
-    wiki.search.end.description = undefined;
+    const e = wiki.search.end;
+    e.input = "";
+    e.id = "";
+    e.title = "";
+    e.thumbnail = undefined;
+    e.description = undefined;
 
-    wiki.result.start.id = "";
-    wiki.result.start.title = "";
-    wiki.result.start.thumbnail = undefined;
-    wiki.result.start.description = undefined;
+    const r = wiki.result;
 
-    wiki.result.end.id = "";
-    wiki.result.end.title = "";
-    wiki.result.end.thumbnail = undefined;
-    wiki.result.end.description = undefined;
+    const rs = r.start;
+    rs.id = "";
+    rs.title = "";
+    rs.thumbnail = undefined;
+    rs.description = undefined;
 
-    wiki.result.time = -1;
-    wiki.result.idToTitle = {};
-    wiki.result.paths = [];
+    const re = r.end;
+    re.id = "";
+    re.title = "";
+    re.thumbnail = undefined;
+    re.description = undefined;
+
+    r.time = -1;
+    r.idToTitle = {};
+    r.paths = [];
 });
+
+export function swapSearch() {
+    console.log("before : ", wiki.search);
+    const s = wiki.search;
+    // [s.start, s.end] = [s.end, s.start];
+    [s.start.input, s.end.input] = [s.end.input, s.start.input];
+    [s.start.id, s.end.id] = [s.end.id, s.start.id];
+    [s.start.title, s.end.title] = [s.end.title, s.start.title];
+    [s.start.thumbnail, s.end.thumbnail] = [s.end.thumbnail, s.start.thumbnail];
+    [s.start.description, s.end.description] = [s.end.description, s.start.description];
+    console.log("after : ", wiki.search);
+}
 
 export const wikiUrl = computed(()=>`https://${currentLang.value}.wikipedia.org/wiki/`);
 

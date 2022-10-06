@@ -4,7 +4,7 @@
             {{ t('label') }}
         </p>
         <WikiTitleInput path-start v-model="wiki.search.start"/>
-        <p path-to> {{ t('to') }}</p>
+        <p path-to> {{ t('to') }}<q-btn @click="swapSearch" flat round icon="mdi-swap-horizontal-bold" /></p>
         <WikiTitleInput path-end   v-model="wiki.search.end"/>
     </div>
 </template>
@@ -41,6 +41,20 @@
     }
     > [path-to] {
         grid-area: →;
+        @media (max-width: 950px) {
+            .q-icon {
+                transform: rotate(90deg);
+            }
+        }
+        > .q-btn {
+            transition: all ease-in-out .2s;
+            &:hover {
+                transform: rotate(180deg);
+            }
+            &:active {
+                transform: rotate(0);
+            }
+        }
     }
     > [path-end] {
         grid-area: e;
@@ -55,8 +69,8 @@
 </style>
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
-import { wiki } from '../store/search';
-import WikiTitleInput from './wiki/WikiTitleInput.vue';
+import { wiki, swapSearch } from '../../store/search';
+import WikiTitleInput from '../wiki/WikiTitleInput.vue';
 
 const { t } = useI18n({ useScope: 'local' });
 </script>
