@@ -1,4 +1,4 @@
-import { ref, reactive, watch, computed } from 'vue';
+import { ref, reactive, watch, computed, nextTick } from 'vue';
 import { Lang, i18n, currentLang } from '../../i18n';
 import { loadPreview } from '../wiki/actions';
 
@@ -58,6 +58,8 @@ export async function fetchAllShortestPaths() {
             }
         }
         loadPreview(Array.from(idSet))
+        await nextTick();
+        document.querySelector('[search-result]')?.scrollIntoView({ block: 'end',  behavior: 'smooth' });
     } catch(e) {
         isFetching.value = false;
     }
@@ -113,7 +115,9 @@ export function swapSearch() {
     [s.start.input, s.end.input] = [s.end.input, s.start.input];
     [s.start.id, s.end.id] = [s.end.id, s.start.id];
     [s.start.title, s.end.title] = [s.end.title, s.start.title];
-    [s.start.thumbnail, s.end.thumbnail] = [s.end.thumbnail, s.start.thumbnail];
+    [s.start.thumbnail!.height, s.end.thumbnail!.height] = [s.end.thumbnail?.height!, s.start.thumbnail?.height!];
+    [s.start.thumbnail!.width, s.end.thumbnail!.width] = [s.end.thumbnail?.width!, s.start.thumbnail?.width!];
+    [s.start.thumbnail!.source, s.end.thumbnail!.source] = [s.end.thumbnail?.source!, s.start.thumbnail?.source!];
     [s.start.description, s.end.description] = [s.end.description, s.start.description];
     console.log("after : ", wiki.search);
 }

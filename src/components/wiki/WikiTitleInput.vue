@@ -1,16 +1,19 @@
 <template>
-    <div wiki-title-input>
-        <input ref="inputTag" v-model="page.input" @focus="inputFocus = true" @blur="unfocus()"/>
+    <div wiki-title-input ref="focusElement">
+        <input v-model="page.input" @focus="inputFocus = true"/>
         <!-- <preview :wikiPreview="vote" class="vote"/> -->
-        <div wiki-title-suggest v-if="inputFocus">
-            <preview v-for="s in suggestions" :wikiPreview="s" :key="s.id" @click.stop="blur();select(s)" />
+        <div wiki-title-suggest>
+            <preview    v-for="s in suggestions" :wikiPreview="s" :key="s.id"
+                        @keypress.enter="blur();select(s)" @click.stop="blur();select(s)" 
+                        disable-goto-wiki aria-roledescription="Select this page for the search on enter key press" />
         </div>
-        <preview :wiki-preview="page"/>
+        <preview :wiki-preview="page" disable-goto-wiki tabindex="-1"/>
     </div>
 </template>
 <style lang="scss">
 [wiki-title-input] {
     --border: 1px solid #0ff5;
+    --border-focus: 1px solid #0ffc;
     width: 100%;
     // height: 2em;
     position: relative;
@@ -24,35 +27,46 @@
         backdrop-filter: blur(3px);
         background: #0001;
         color: #000;
+        text-overflow: ellipsis;
         @at-root .body--dark & {
             background: #fff1;
             color: #fff;
         }
+        &:focus, &:focus-visible {
+            outline: var(--border);
+            outline-offset: 1px;
+            border: var(--border-focus);
+        }
+    }
+    &:focus-within [wiki-title-suggest] {
+        display: flex;
     }
     [wiki-title-suggest] {
         z-index: 2;
-        backdrop-filter: blur(3px);
-        // overflow: hidden;
         position: absolute;
-        display: flex;
+        display: none;
         flex-direction: column;
         width: 100%;
         border: var(--border);
         border-top: none;
         border-radius: 10px;
+        background: #fffa;
+        @at-root .body--dark & {
+            background: #000a;
+        }
         .wiki-preview {
-            background: inherit;
             border-bottom: var(--border);
             cursor: pointer;
             &:last-child {
                 border-bottom: none;
             }
             &:hover {
-                backdrop-filter: brightness(1.5);
-                z-index: 5;
+                background: #fffa;
+                @at-root .body--dark & {
+                    background: #000a;
+                }
             }
         }
-
     }
     > .wiki-preview {
         border: var(--border);
@@ -89,7 +103,7 @@ const inputFocus = ref(false);
 const suggestions = ref<WikiSuggestion[]>([])
 
 watchDebounced(pageRef.input, async t => suggestions.value = await loadSuggestions(t), { debounce: 500, maxWait: 1500 });
-const inputTag = ref<HTMLElement>();
+const focusElement = ref<HTMLElement>();
 function select(s:WikiSuggestion) {
     page.input = s.title;
     page.title = s.title;
@@ -101,7 +115,12 @@ function select(s:WikiSuggestion) {
 //the set time out is a hack to prevent vue from remove (v-if) the suggestions before it handle the click event on it
 //nextTick don't work for some reason
 function unfocus(){setTimeout(() => inputFocus.value = false,250)}
-function blur(){inputTag.value?.blur();}
+function blur(){
+    focusElement.value
+        ?.querySelectorAll(':focus,:focus-visible')
+        .forEach((e:any)=>e?.blur?.());
+    focusElement.value?.querySelector('input')?.blur?.();
+}
 watch(i18n.global.locale, v=>{
     suggestions.value = []
 })

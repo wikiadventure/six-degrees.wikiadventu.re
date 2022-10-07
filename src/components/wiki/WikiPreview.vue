@@ -1,13 +1,19 @@
 <template>
-  <div class="wiki-preview">
-    <div class="img" v-if="wikiPreview?.thumbnail != null">
-      <img :src="wikiPreview?.thumbnail?.source" :width="wikiPreview?.thumbnail?.width" :height="wikiPreview?.thumbnail?.height" />
+  <div class="wiki-preview" tabindex="0"
+    @keypress.enter="gotoWiki"
+    :aria-roledescription="disableGotoWiki ? undefined : 'Goto the wikipedia page on enter key press'"
+    >
+    <div class="img" v-if="image != null">
+      <img :src="image.source" :width="image.width" :height="image.height" />
     </div>
     <div class="img none" v-else >
       <q-icon size="40px" name="mdi-help" />
     </div>
-    <h3>{{ (wikiPreview?.title || "???" ) }}
-      <q-btn icon="mdi-open-in-new" v-if="wikiPreview.title != ''" target="_blank" size="sm" flat round type="a" :href="wikiUrl + wikiPreview.title.replaceAll(' ', '_')" />
+    <h3>
+      <q-btn  icon="mdi-open-in-new" v-if="wikiPreview.title != ''"
+              type="a" target="_blank" :href="url"
+              size="sm" flat round tabindex="-1"
+      />{{ (wikiPreview?.title || "???" ) }}
     </h3>
     <p>{{ wikiPreview?.description || "???" }}</p>
   </div>
@@ -20,7 +26,7 @@
   grid-template-areas: 
   "i t t"
   "i d d";
-  padding: 10px;
+  padding: 10px 0 10px 10px;
   &:last-child {
     border: none;
   }
@@ -28,6 +34,9 @@
   background: #0001;
   @at-root .body--dark & {
     background: #fff1;
+  }
+  &:hover, &:focus, &:focus-visible {
+    z-index: 5;
   }
   .img {
     display: grid;
@@ -38,23 +47,21 @@
     background: none;
     border-radius: 3px;
     position: relative;
-    background: #0004;
-    @at-root .body--dark & {
-      background: #fff4;
-    }
     &:not(.none) {
       filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff);
       &:hover {
         z-index: 5;
         isolation: isolate;
-        img {
-          max-width: 100vmin;
-          max-height: 100vmin;
-          border-radius: 0;
-          filter: drop-shadow(0 0 3px #fff);
-          transition: filter .5s, max-height .5s .5s, max-width .5s .5s;
-        }
       }
+    }
+  }
+  .img:not(.none):hover, &:focus .img, :focus-visible .img {
+    img {
+      max-width: 100vmin;
+      max-height: 100vmin;
+      border-radius: 0;
+      filter: drop-shadow(0 0 3px #fff);
+      transition: filter .5s, max-height .5s .5s, max-width .5s .5s;
     }
   }
   .img>img {
@@ -67,33 +74,44 @@
   }
   .img.none {
     border: 1px solid grey;
+    background: #0001;
+    @at-root .body--dark & {
+      background: #fff1;
+    }
   }
   h3 {
     grid-area: t;
-    margin: 0 15px;
-    font-size: 1.5rem;
-    line-height: 1.5rem;
-    >* {
+    font-weight: bolder;
+    -webkit-line-clamp: 2;
+    max-height: 2em;
+    > a {
       float: right;
+      margin-right: -8px;
     }
   }
-  p {
-    grid-area: d;
-    margin: 0 15px;
-    padding-bottom: 2px;
+  p, h3 {
+    margin: 0;
+    padding: 0 10px;
     font-size: 1rem;
-    line-height: 1rem;
+    line-height: 1em;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
     text-overflow: ellipsis;
     overflow: hidden;
     -webkit-box-orient: vertical;
-    max-height: 7ex;
     transition: .5s max-height;
-    &:hover {
-      -webkit-line-clamp: 100;
-      max-height: 30ex;
-    }
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  p {
+    grid-area: d;
+    margin-bottom: 2px;
+    -webkit-line-clamp: 3;
+    max-height: 3em;
+  }
+  &:is(:hover, :focus, :focus-visible) :is(p, h3) {
+    -webkit-line-clamp: 100;
+    max-height: 30rem;
   }
 }
 </style>
@@ -101,10 +119,15 @@
 import { PropType } from 'vue';
 import { WikiPage, wikiUrl } from '../../store/search';
 
-const { wikiPreview } = defineProps({
+const { wikiPreview, disableGotoWiki } = defineProps({
   wikiPreview: {
     type: Object as PropType<Omit<WikiPage, "id">>,
     required: true
-  }
+  },
+  disableGotoWiki: Boolean
 });
+const { title, thumbnail: image } = wikiPreview;
+const url = wikiUrl.value + wikiPreview.title.replaceAll(' ', '_');
+const gotoWiki = () => disableGotoWiki || window.open(url, "_blank");
+
 </script>
