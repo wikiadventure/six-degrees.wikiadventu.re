@@ -4,7 +4,7 @@
             {{ t('label') }}
         </p>
         <WikiTitleInput path-start v-model="wiki.search.start"/>
-        <p path-to> {{ t('to') }}<q-btn @click="swapSearch" flat round icon="mdi-swap-horizontal-bold" /></p>
+        <p path-to> {{ t('to') }}<q-icon role="btn" tabindex="0" @click="swapSearch" @keypress.enter="swapSearch" name="mdi-swap-horizontal-bold" /></p>
         <WikiTitleInput path-end   v-model="wiki.search.end"/>
     </div>
 </template>
@@ -46,10 +46,13 @@
                 transform: rotate(90deg);
             }
         }
-        > .q-btn {
+        > .q-icon {
             transition: all ease-in-out .2s;
-            &:hover {
+            cursor: pointer;
+            &:hover, &:focus, &:focus-visible {
+                outline: none;
                 transform: rotate(180deg);
+                filter: drop-shadow(0 0 5px cyan) drop-shadow(0 0 1px cyan);
             }
             &:active {
                 transform: rotate(0);

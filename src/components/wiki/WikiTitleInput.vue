@@ -108,7 +108,9 @@ function select(s:WikiSuggestion) {
     page.input = s.title;
     page.title = s.title;
     page.id = s.id;
-    page.thumbnail = s.thumbnail;
+    page.thumbnail!.height = s.thumbnail.height;
+    page.thumbnail!.width= s.thumbnail.height;
+    page.thumbnail!.source = s.thumbnail.source;
     page.description = s.description;
 
 }

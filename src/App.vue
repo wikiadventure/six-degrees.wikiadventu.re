@@ -11,7 +11,7 @@ import ThemeSwitch from './components/setting/ThemeSwitch.vue';
   <main search-app>
     <LangSwitch/>
     <ThemeSwitch/>
-		<h1>Six Degrees Of Wiki Adventure</h1>
+		<h1 title="Six Degrees Of Wiki Adventure">6° of Wiki Adventure</h1>
     <section more-about>
       <a href="#">About</a>
 		  <a href="https://github.com/Sacramentix/six-degrees-of-wiki-adventure-front"><q-icon name="mdi-github" /> Github</a>

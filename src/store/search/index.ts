@@ -4,27 +4,51 @@ import { loadPreview } from '../wiki/actions';
 
 export const isFetching = ref(false);
 
-export const wiki = reactive<SearchStore>({
+export const initial = () => ({
     search: {
         start: {
             input: "",
             id: "",
-            title: ""
+            title: "",
+            description: null,
+            thumbnail: {
+                source: null,
+                width: null,
+                height: null
+            }
         },
         end: {
             input: "",
             id: "",
-            title: ""
+            title: "",
+            description: null,
+            thumbnail: {
+                source: null,
+                width: null,
+                height: null
+            }
         }
     },
     result : {
         start: {
             id: "",
-            title: ""
+            title: "",
+            description: null,
+            thumbnail: {
+                source: null,
+                width: null,
+                height: null
+            }
         },
         end: {
             id: "",
-            title: ""
+            title: "",
+            description: null,
+            thumbnail: {
+                source: null,
+                width: null,
+                height: null
+            }
         },
         paths: [],
         idToTitle: {},
@@ -32,6 +56,9 @@ export const wiki = reactive<SearchStore>({
         
     }
 })
+
+export const wiki = reactive<SearchStore>(initial());
+
 
 export async function fetchAllShortestPaths() {
     isFetching.value = true;
@@ -108,18 +135,21 @@ watch(currentLang, v=>{
     r.paths = [];
 });
 
+/**
+ * Swap the end with the start
+ */
 export function swapSearch() {
-    console.log("before : ", wiki.search);
-    const s = wiki.search;
-    // [s.start, s.end] = [s.end, s.start];
-    [s.start.input, s.end.input] = [s.end.input, s.start.input];
-    [s.start.id, s.end.id] = [s.end.id, s.start.id];
-    [s.start.title, s.end.title] = [s.end.title, s.start.title];
-    [s.start.thumbnail!.height, s.end.thumbnail!.height] = [s.end.thumbnail?.height!, s.start.thumbnail?.height!];
-    [s.start.thumbnail!.width, s.end.thumbnail!.width] = [s.end.thumbnail?.width!, s.start.thumbnail?.width!];
-    [s.start.thumbnail!.source, s.end.thumbnail!.source] = [s.end.thumbnail?.source!, s.start.thumbnail?.source!];
-    [s.start.description, s.end.description] = [s.end.description, s.start.description];
-    console.log("after : ", wiki.search);
+    const ss = wiki.search.start;
+    const se = wiki.search.start;
+    const sst = ss.thumbnail;
+    const set = se.thumbnail;
+    [ss.input, se.input] = [se.input, ss.input];
+    [ss.id, se.id] = [se.id, ss.id];
+    [ss.title, se.title] = [se.title, ss.title];
+    [sst.height, set.height] = [set.height, sst.height];
+    [sst.width, set.width] = [set.width, sst.width];
+    [sst.source, set.source] = [set.source, sst.source];
+    [ss.description, se.description] = [se.description, ss.description];
 }
 
 export const wikiUrl = computed(()=>`https://${currentLang.value}.wikipedia.org/wiki/`);
@@ -147,13 +177,10 @@ type SearchStore = {
 export type WikiPage = {
     id: string,// number as string
     title: string,
-    description?: string,
-    thumbnail?: {
-        source: string,
-        width: number,
-        height: number
+    description: string | null,
+    thumbnail: {
+        source: string | null,
+        width: number | null,
+        height: number | null
     } 
 }
-
-type AvailableLang = 
-    Lang.eo;
