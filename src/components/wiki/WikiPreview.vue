@@ -1,17 +1,55 @@
+<script lang="ts" setup>
+import { computed, ComputedRef, reactive, toRefs } from '@vue/reactivity';
+import { watch } from 'vue';
+import { wiki, WikiPage, wikiUrl } from '../../store/search';
+import { onWikiPreviewMapChange } from '../../store/search/onMapChange';
+
+const { wikiId, disableGotoWiki } = defineProps({
+  wikiId: {
+    type: Number,
+    required: true
+  },
+  disableGotoWiki: Boolean
+});
+
+let wikiPreview = reactive<WikiPage>({
+  title: "",
+  description: null,
+  thumbnail: null
+});
+
+const {
+  title,
+  description,
+  thumbnail
+} = toRefs(wikiPreview);
+
+function loadPreviewFromMap() {
+  const p = wiki.previewMap.get(wikiId);
+  if (p != null) {
+    title.value = p.title;
+    description.value = p.description;
+    thumbnail.value = p.thumbnail;
+  }
+}
+
+onWikiPreviewMapChange(loadPreviewFromMap);
+
+</script>
 <template>
   <div class="wiki-preview" tabindex="0"
-    @keypress.enter="gotoWiki"
+    @keypress.enter="wikiPreview.openWiki"
     :aria-roledescription="disableGotoWiki ? undefined : 'Goto the wikipedia page on enter key press'"
     >
-    <div class="img" v-if="image != null">
-      <img :src="image.source" :width="image.width" :height="image.height" />
+    <div class="img" v-if="image?.source != null">
+      <img :src="image.source" :width="image.width!" :height="image.height!" />
     </div>
     <div class="img none" v-else >
       <q-icon size="40px" name="mdi-help" />
     </div>
     <h3>
       <q-btn  icon="mdi-open-in-new" v-if="wikiPreview.title != ''"
-              type="a" target="_blank" :href="url"
+              type="a" target="_blank" :href="wikiUrl + wikiPreview.title.replaceAll(' ', '_')"
               size="sm" flat round tabindex="-1"
       />{{ (wikiPreview?.title || "???" ) }}
     </h3>
@@ -24,8 +62,8 @@
   grid-template-columns: 80px 1fr;
   grid-template-rows: auto auto;
   grid-template-areas: 
-  "i t t"
-  "i d d";
+    "i t t"
+    "i d d";
   padding: 10px 0 10px 10px;
   &:last-child {
     border: none;
@@ -37,47 +75,6 @@
   }
   &:hover, &:focus, &:focus-visible {
     z-index: 5;
-  }
-  .img {
-    display: grid;
-    grid-area: i;
-    width: 80px;
-    height: 80px;
-    place-items: center;
-    background: none;
-    border-radius: 3px;
-    position: relative;
-    &:not(.none) {
-      filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff);
-      &:hover {
-        z-index: 5;
-        isolation: isolate;
-      }
-    }
-  }
-  .img:not(.none):hover, &:focus .img, :focus-visible .img {
-    img {
-      max-width: 100vmin;
-      max-height: 100vmin;
-      border-radius: 0;
-      filter: drop-shadow(0 0 3px #fff);
-      transition: filter .5s, max-height .5s .5s, max-width .5s .5s;
-    }
-  }
-  .img>img {
-    position: absolute;
-    max-width: 80px;
-    max-height: 80px;
-    object-fit: cover;
-    border-radius: 3px;
-    transition: filter 1s, max-height .5s 0s, max-width .5s 0s;
-  }
-  .img.none {
-    border: 1px solid grey;
-    background: #0001;
-    @at-root .body--dark & {
-      background: #fff1;
-    }
   }
   h3 {
     grid-area: t;
@@ -115,19 +112,3 @@
   }
 }
 </style>
-<script lang="ts" setup>
-import { PropType } from 'vue';
-import { WikiPage, wikiUrl } from '../../store/search';
-
-const { wikiPreview, disableGotoWiki } = defineProps({
-  wikiPreview: {
-    type: Object as PropType<Omit<WikiPage, "id">>,
-    required: true
-  },
-  disableGotoWiki: Boolean
-});
-const { title, thumbnail: image } = wikiPreview;
-const url = wikiUrl.value + wikiPreview.title.replaceAll(' ', '_');
-const gotoWiki = () => disableGotoWiki || window.open(url, "_blank");
-
-</script>

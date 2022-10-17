@@ -22,7 +22,7 @@
         <div search-result-paths>
             <div v-for="path in result.paths.slice(0, visiblePathCount)">
                 <preview :wiki-preview="result.start"/>
-                <preview v-for="pageId in path" :wiki-preview="result.idToTitle?.[pageId+'']!"/>
+                <preview v-for="pageId in path" :wiki-id="pageId" :key="pageId"/>
                 <preview :wiki-preview="result.end"/>
             </div>
         </div>
@@ -59,7 +59,7 @@
 </style>
 <script lang="ts" setup>
 import preview from "../wiki/WikiPreview.vue";
-import { wiki } from '../../store/search';
+import { idToTitle, wiki } from '../../store/search';
 import { useI18n } from 'vue-i18n';
 import { useMinutesSecondes } from '../../composables/time';
 import { toRefs } from '@vueuse/core';
@@ -70,6 +70,9 @@ const visiblePathCount = 20;
 const result = wiki.result;
 console.log(toRefs(wiki.result));
 const { formatedTime } = useMinutesSecondes(toRefs(wiki.result).time!);
+
+const previewFromMap = (pageId:number)=> idToTitle?.[pageId+'']!
+
 </script>
 <i18n lang="yaml">
 en:

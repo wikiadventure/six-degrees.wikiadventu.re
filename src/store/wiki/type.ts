@@ -1,17 +1,21 @@
-export interface WikiRawSuggestion  {
+export interface WikiRawPreview  {
     ns: number,
     pageid: number,
     index: number, 
     title: string, 
-    terms: {
-      description: string[]
-    },
+    description: string
     thumbnail: {
       source: string,
       width: number,
       height: number
     }
     missing?: string
+}
+
+export interface WikiPreviewResponse {
+  query: {
+    pages: WikiRawPreview[]
+  }
 }
 
 export const wikiHeaders = new Headers({

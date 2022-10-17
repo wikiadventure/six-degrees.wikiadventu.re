@@ -86,6 +86,9 @@ main {
       padding: .5em 1em;
       border-radius: 100vmax;
       backdrop-filter: blur(1px);
+      &:hover {
+        backdrop-filter: drop-shadow(0 0 5px cyan);
+      }
       @at-root .body--dark & {
         color: #fff;
         background: #fff1;
