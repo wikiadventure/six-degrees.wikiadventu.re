@@ -1,11 +1,11 @@
-import { onBeforeUnmount } from "vue";
+import { onUnmounted } from "vue";
 
 export const listeners:(()=>void)[] = [];
 
 export function useWikiPreviewMapChange(listener:()=>void) {
     onWikiPreviewMapChange(listener);
 
-    onBeforeUnmount(()=>{
+    onUnmounted(()=>{
         listeners.splice(
             listeners.findIndex(v=>v===listener),
             1

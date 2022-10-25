@@ -3,9 +3,9 @@
         <p search-label>
             {{ t('label') }}
         </p>
-        <WikiTitleInput path-start v-model="wiki.search.start"/>
-        <p path-to> {{ t('to') }}<q-icon role="btn" tabindex="0" @click="swapSearch" @keypress.enter="swapSearch" name="mdi-swap-horizontal-bold" /></p>
-        <WikiTitleInput path-end   v-model="wiki.search.end"/>
+        <WikiTitleInput path-start v-model:id="wiki.search.start.id"  v-model:input="wiki.search.start.input"/>
+        <p path-to>{{ t('to') }}<IconSwap tabindex="0" @click="swapSearch" @keypress.enter="swapSearch" /> </p>
+        <WikiTitleInput path-end   v-model:id="wiki.search.end.id"    v-model:input="wiki.search.end.input"  />
     </div>
 </template>
 <style lang="scss">
@@ -14,7 +14,7 @@
     gap: 2ch;
     width: 100%;
     align-self: stretch;
-    margin: auto;
+    margin: 0 auto;
     max-width: 120ch;
     grid-template-areas:    "p p p"
                             "s → e";
@@ -40,27 +40,40 @@
         grid-area: s;
     }
     > [path-to] {
+        margin-top: 20px;
+        align-self: flex-start;
         grid-area: →;
-        @media (max-width: 950px) {
-            .q-icon {
-                transform: rotate(90deg);
-            }
-        }
-        > .q-icon {
+        > svg {
             transition: all ease-in-out .2s;
             cursor: pointer;
-            &:hover, &:focus, &:focus-visible {
+            &:is(:hover, :focus, :focus-visible) {
                 outline: none;
                 transform: rotate(180deg);
-                filter: drop-shadow(0 0 5px cyan) drop-shadow(0 0 1px cyan);
+                filter: drop-shadow(0 0 5px var(--heat-color)) drop-shadow(0 0 1px  var(--heat-color));
             }
             &:active {
                 transform: rotate(0);
             }
         }
+        @media (max-width: 950px) {
+            margin-top: 0;
+            
+            > svg {
+                transform: rotate(90deg);
+                &:hover, &:focus, &:focus-visible {
+                    transform: rotate(270deg);
+                }
+                &:active {
+                    transform: rotate(90deg);
+                }
+            }
+        }
     }
     > [path-end] {
         grid-area: e;
+    }
+    > [wiki-title-input] {
+        align-self: flex-start;
     }
     > input {
         padding: 0.5em 15px;
@@ -74,6 +87,7 @@
 import { useI18n } from 'vue-i18n';
 import { wiki, swapSearch } from '../../store/search';
 import WikiTitleInput from '../wiki/WikiTitleInput.vue';
+import IconSwap from '~icons/mdi/swap-horizontal-bold';
 
 const { t } = useI18n({ useScope: 'local' });
 </script>

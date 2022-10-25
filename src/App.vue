@@ -4,22 +4,24 @@ import SearchResult from './components/search/SearchResult.vue';
 import SearchButton from './components/search/SearchButton.vue';
 import LangSwitch from './components/setting/LangSwitch.vue';
 import ThemeSwitch from './components/setting/ThemeSwitch.vue';
-
+import HeatMeter from './components/cosmetic/HeatMeter.vue';
+import GlassButton from './components/cosmetic/GlassButton.vue';
+import MdiGithub from '~icons/mdi/github';
 </script>
 
 <template>
-  <main search-app>
+  <HeatMeter search-app>
     <LangSwitch/>
-    <ThemeSwitch/>
-		<h1 title="Six Degrees Of Wiki Adventure">6° of Wiki Adventure</h1>
+    <!-- <ThemeSwitch/> -->
+		<h1 title="Six Degrees Of Wiki Adventure">🌡️ 6° of Wiki Adventure</h1>
     <section more-about>
-      <a href="#">About</a>
-		  <a href="https://github.com/Sacramentix/six-degrees-of-wiki-adventure-front"><q-icon name="mdi-github" /> Github</a>
+      <!-- <GlassButton href="#">About</GlassButton> -->
+      <GlassButton href="https://github.com/Sacramentix/six-degrees-of-wiki-adventure-front"><MdiGithub/> Github</GlassButton>
     </section>
 		<SearchInput/>
     <SearchButton/>
 		<SearchResult/>
-	</main>
+	</HeatMeter>
 </template>
 
 <style lang="scss">
@@ -33,34 +35,31 @@ import ThemeSwitch from './components/setting/ThemeSwitch.vue';
 * {
   box-sizing: border-box;
 }
-
-body {
-  background: #fff;
-  color: #000;
-  overflow-y: scroll;
-  &.body--dark {
-    background: #000;
-    color: #eee;
-  }
+html, body {
+  padding: 0;
+  margin: 0;
 }
 
-main h1 {
-  margin: 1em 15px 0 15px;
-  font-size: calc(3em + 5vw);
-  line-height: 1em;
-  text-align: center;
+body {
+  background: #000;
+  color: #eee;
+  overflow-y: scroll;
 }
 
 main {
+  h1 {
+    margin: 1em 15px 0 15px;
+    font-size: calc(3em + 5vw);
+    line-height: 1em;
+    text-align: center;
+  }
   &[search-app] {
     padding: 1em;
     display: flex;
     gap: 30px;
     flex-direction: column;
     align-items: center;
-    align-content: stretch;
-    // max-width: 120ch;
-    // position: relative;
+    // align-content: ;
   }
   > [lang-switch] {
     position: absolute;
@@ -78,26 +77,6 @@ main {
     display: flex;
     justify-content: center;
     gap: 15px;
-    > a {
-      text-decoration: none;
-      color: #000;
-      font-size: 2em;
-      background: #0001;
-      padding: .5em 1em;
-      border-radius: 100vmax;
-      backdrop-filter: blur(1px);
-      &:hover {
-        backdrop-filter: drop-shadow(0 0 5px cyan);
-      }
-      @at-root .body--dark & {
-        color: #fff;
-        background: #fff1;
-      }
-      > .q-icon {
-        vertical-align: baseline;
-      }
-      vertical-align: middle;
-    }
   }
 }
 

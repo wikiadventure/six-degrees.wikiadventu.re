@@ -1,15 +1,19 @@
 import { ref, reactive, watch, computed, nextTick } from 'vue';
-import { Lang, i18n, currentLang } from '../../i18n';
+import { i18n, currentLang } from '../../i18n';
 import { loadPreview } from '../wiki/actions';
 
 export const isFetching = ref(false);
 
 export const initial = ():SearchStore => ({
     search: {
-        start: -1,
-        startInput: "",
-        end: -1,
-        endInput: ""
+        start: {
+            id: -1,
+            input: ""
+        },
+        end: {
+            id: -1,
+            input: ""
+        }
     },
     result : {
         start: -1,
@@ -17,51 +21,57 @@ export const initial = ():SearchStore => ({
         time: -1,
         paths: []
     },
+    degree: 2,
     previewMap: new Map(),
+    visiblePathCount: 20
 })
 
 export const wiki = reactive<SearchStore>(initial());
 
 export async function fetchAllShortestPaths() {
-    isFetching.value = true;
-    wiki.result.start = wiki.search.start;
-    wiki.result.end = wiki.search.end;
+    wiki.result.start = wiki.search.start.id;
+    wiki.result.end = wiki.search.end.id;
     wiki.result.time = -1;
     wiki.result.paths = [];
+    if (wiki.result.start == wiki.result.end) {
+        wiki.result.time = 0;
+        wiki.degree = 0;
+        wiki.result.paths.push([]);
+        return;
+    }
+    isFetching.value = true;
     try {
-        const data:SearchResult = await fetch(`https://${i18n.global.locale.value}wiki-graph-serverless-lfpojybovq-od.a.run.app/all-shortest-path/${wiki.search.start}/to/${wiki.search.end}`)
+        const data:SearchResult = await fetch(`https://${i18n.global.locale.value}wiki-graph-serverless-lfpojybovq-od.a.run.app/all-shortest-path/${wiki.search.start.id}/to/${wiki.search.end.id}`)
                                         .then(r=>r.json());
-        wiki.result.paths = data.paths;
+        wiki.result.paths = data.paths.map(p=>p.map(i=>Number(i)));
         wiki.result.time = data.time;
         isFetching.value = false;
-        const idSet = new Set<number>();
-        for (const path of wiki.result.paths!) {
-            for (const id of path) {
-                idSet.add(id);
-            }
+        if (wiki.result.paths[0]!=null) wiki.degree = wiki.result.paths[0]?.length + 1;
+        for (const [k,v] of Object.entries(data.idToTitle)) {
+            const id = Number(k);
+            if (wiki.previewMap.get(id)==null) wiki.previewMap.set(id, {title: v, loading: true });
         }
-        loadPreview(Array.from(idSet))
-        await nextTick();
-        document.querySelector('[search-result]')?.scrollIntoView({ block: 'end',  behavior: 'smooth' });
+        loadVisiblePathPreviews();
     } catch(e) {
         isFetching.value = false;
     }
 }
-export const searchResult = ref<SearchResult>();
 
-export function useAllShortestPaths() {
-    return {
-        fetch: fetchAllShortestPaths,
-        isFetching,
-        result: wiki.result
+export async function loadVisiblePathPreviews() {
+    const idSet = new Set<number>();
+    for (const [i, path] of wiki.result.paths.entries()) {
+        if (i > wiki.visiblePathCount) break;
+        for (const id of path) {
+            idSet.add(id);
+        }
     }
+    loadPreview(Array.from(idSet))
 }
 
 watch(currentLang, v => {
     
     const assign = (from:any, to:any) => {
         for (const [k,e] of Object.entries(from)) {
-            console.log({k,e})
             typeof e === 'object'
             ? Array.isArray(e)
                 ? to[k] = e
@@ -92,10 +102,14 @@ type SearchResult = {
 
 type SearchStore = {
     search: {
-        start: number,
-        end: number,
-        startInput: string,
-        endInput: string
+        start: {
+            id: number,
+            input: string
+        },
+        end: {
+            id: number,
+            input: string
+        },
     },
     result: {
         start:number,
@@ -103,15 +117,25 @@ type SearchStore = {
         time:number,
         paths:number[][]
     },
-    previewMap: Map<number, WikiPage>
+    degree: number,
+    previewMap: Map<number, WikiPage>,
+    visiblePathCount: number
 }
 
 export type WikiPage = {
     title: string,
     description: string | null,
-    thumbnail: {
-        source: string,
-        width: number,
-        height: number
-    } | null
+    thumbnail: WikiThumbnail | null,
+    loading?: undefined,
+} | {
+    title: string,
+    description?:undefined,
+    thumbnail?: undefined,
+    loading: true,
+};
+
+export type WikiThumbnail = {
+    source: string,
+    width: number,
+    height: number
 }
