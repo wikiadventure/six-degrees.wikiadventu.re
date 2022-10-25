@@ -2,7 +2,7 @@
 <template>
   <div lang-switch tabindex="0" @click="dialog?.showModal()" @keypress.enter="dialog?.showModal()">
     <IconTranslate/> {{ locale }}
-    <dialog ref="dialog" @click.stop="dialog?.close()" @keydown.stop.enter="select()" @keydown.prevent.up="incFocus(-1)" @keydown.prevent.down="incFocus()">
+    <dialog ref="dialog" @click.stop="dialog?.close()" @keydown.prevent.enter="select()" @keydown.prevent.up="incFocus(-1)" @keydown.prevent.down="incFocus()">
       <div role="listbox" aria-multiselectable="false">
         <label><IconTranslate/> {{ langs[locale as Lang] }}</label>
         <div v-for="[k,v] in langEntries" role="option" tabindex="-1" :aria-selected="k == locale" :is-focus="k == focusLang"
