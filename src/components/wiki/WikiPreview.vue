@@ -1,31 +1,69 @@
+<script lang="ts" setup>
+import { ref } from '@vue/reactivity';
+import { wiki, wikiUrl } from '../../store/search';
+import { onWikiPreviewMapChange } from '../../store/search/onMapChange';
+import WikiThumbnail from './WikiThumbnail.vue';
+import { WikiThumbnail as ThumbnailType } from '../../store/search';
+import SearchLoader from '../search/SearchLoader.vue';
+
+const props = defineProps({
+  wikiId: {
+    type: Number,
+    required: true
+  },
+  disableGotoWiki: Boolean,
+  debug: Boolean
+});
+
+const title = ref("");
+const description = ref("");
+const thumbnail = ref<ThumbnailType | null>(null);
+const loading = ref<boolean>(false);
+
+function loadPreviewFromMap() {
+  const p = wiki.previewMap.get(props.wikiId);
+  if (p != null) {
+    title.value = p.title;
+    loading.value = !!p.loading;
+    if (!p.loading) {
+      description.value = p.description!;
+      thumbnail.value = p.thumbnail;
+    }
+  }
+}
+loadPreviewFromMap()
+onWikiPreviewMapChange(loadPreviewFromMap);
+
+function openWiki() {
+  props.disableGotoWiki || window.open(wikiUrl.value + title.value.replaceAll(' ', '_'), "_blank");
+}
+
+</script>
 <template>
-  <div class="wiki-preview" tabindex="0"
-    @keypress.enter="gotoWiki"
-    :aria-roledescription="disableGotoWiki ? undefined : 'Goto the wikipedia page on enter key press'"
+  <div wiki-preview tabindex="0" 
+    :aria-roledescription="props.disableGotoWiki ? undefined : 'Goto the wikipedia page on enter key press'"
+    @keypress.enter="openWiki"
     >
-    <div class="img" v-if="image != null">
-      <img :src="image.source" :width="image.width" :height="image.height" />
-    </div>
-    <div class="img none" v-else >
-      <q-icon size="40px" name="mdi-help" />
-    </div>
+    <wiki-thumbnail v-if="!loading" :thumbnail="thumbnail"/>
+    <SearchLoader v-else/>
     <h3>
-      <q-btn  icon="mdi-open-in-new" v-if="wikiPreview.title != ''"
-              type="a" target="_blank" :href="url"
+      <!-- <q-btn icon="mdi-open-in-new" v-if="!props.disableGotoWiki && title != ''"
+              type="a" target="_blank" :href="wikiUrl + title.replaceAll(' ', '_')"
               size="sm" flat round tabindex="-1"
-      />{{ (wikiPreview?.title || "???" ) }}
+      /> -->
+      {{ (title || "???" ) }}
     </h3>
-    <p>{{ wikiPreview?.description || "???" }}</p>
+    <p>{{ description || "???" }}</p>
   </div>
 </template>
 <style lang="scss">
-.wiki-preview {
+[wiki-preview] {
   display: grid;
   grid-template-columns: 80px 1fr;
   grid-template-rows: auto auto;
   grid-template-areas: 
-  "i t t"
-  "i d d";
+    "i t t"
+    "i d d";
   padding: 10px 0 10px 10px;
   &:last-child {
     border: none;
@@ -38,47 +76,15 @@
   &:hover, &:focus, &:focus-visible {
     z-index: 5;
   }
-  .img {
-    display: grid;
-    grid-area: i;
-    width: 80px;
-    height: 80px;
-    place-items: center;
-    background: none;
-    border-radius: 3px;
-    position: relative;
-    &:not(.none) {
-      filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff);
-      &:hover {
-        z-index: 5;
-        isolation: isolate;
-      }
-    }
+  &:focus, &:focus-visible {
+    outline: 2px solid var(--heat-color);
+    outline-offset: 4px;
   }
-  .img:not(.none):hover, &:focus .img, :focus-visible .img {
-    img {
-      max-width: 100vmin;
-      max-height: 100vmin;
-      border-radius: 0;
-      filter: drop-shadow(0 0 3px #fff);
-      transition: filter .5s, max-height .5s .5s, max-width .5s .5s;
-    }
+
+  & > [wiki-thumbnail], & > [search-loader] {
+    grid: i;
   }
-  .img>img {
-    position: absolute;
-    max-width: 80px;
-    max-height: 80px;
-    object-fit: cover;
-    border-radius: 3px;
-    transition: filter 1s, max-height .5s 0s, max-width .5s 0s;
-  }
-  .img.none {
-    border: 1px solid grey;
-    background: #0001;
-    @at-root .body--dark & {
-      background: #fff1;
-    }
-  }
+
   h3 {
     grid-area: t;
     font-weight: bolder;
@@ -89,6 +95,7 @@
       margin-right: -8px;
     }
   }
+
   p, h3 {
     margin: 0;
     padding: 0 10px;
@@ -103,31 +110,17 @@
     overflow-wrap: break-word;
     hyphens: auto;
   }
+
   p {
     grid-area: d;
     margin-bottom: 2px;
     -webkit-line-clamp: 3;
     max-height: 3em;
   }
+
   &:is(:hover, :focus, :focus-visible) :is(p, h3) {
     -webkit-line-clamp: 100;
     max-height: 30rem;
   }
 }
 </style>
-<script lang="ts" setup>
-import { PropType } from 'vue';
-import { WikiPage, wikiUrl } from '../../store/search';
-
-const { wikiPreview, disableGotoWiki } = defineProps({
-  wikiPreview: {
-    type: Object as PropType<Omit<WikiPage, "id">>,
-    required: true
-  },
-  disableGotoWiki: Boolean
-});
-const { title, thumbnail: image } = wikiPreview;
-const url = wikiUrl.value + wikiPreview.title.replaceAll(' ', '_');
-const gotoWiki = () => disableGotoWiki || window.open(url, "_blank");
-
-</script>

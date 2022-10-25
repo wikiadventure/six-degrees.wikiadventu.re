@@ -1,68 +1,25 @@
+<script lang="ts" setup>
+import { useI18n } from 'vue-i18n';
+import { wiki, isFetching, fetchAllShortestPaths } from '../../store/search';
+import SearchLoader from './SearchLoader.vue';
+import GlassButton from '../cosmetic/GlassButton.vue';
+
+const { t } = useI18n({ useScope: 'local' });
+</script>
 <template>
-    <button v-if="!isFetching" :disabled="wiki.search.start.id == '' || wiki.search.end.id == ''" search-button @click="fetch">
+    <GlassButton type="button" v-if="!isFetching" :disabled="wiki.search.start.id == -1 || wiki.search.end.id == -1" search-button @click="fetchAllShortestPaths">
         {{ t('search') }} !
-    </button>
-    <div v-else search-button-loader></div>
+    </GlassButton>
+    <SearchLoader v-else/>
 </template>
 <style lang="scss">
 [search-button] {
-    padding: 15px 25px;
-    border-radius: 15px;
-    background: #f44646;
-    border: 2px solid #000;
-    color: #fff;
-    font-size: 2rem;
-    text-align: center;
-    transition: all ease-in-out .2s;
-    cursor: pointer;
-    &:hover {
-        filter: brightness(1.1);
+    &[disabled] {
+        cursor: not-allowed;
+        filter: saturate(.5);
     }
-    &:active {
-        filter: brightness(0.95);
-    }
-}
-
-.body--dark {
-    [search-button] {
-        border: 2px solid #fff;
-        color: #fff;
-        background: transparent;
-        filter: drop-shadow(0 0 5px cyan) drop-shadow(0 0 1px rgba(0, 255, 255, .3));
-        &:not([disabled]):hover {
-            filter: drop-shadow(0 0 5px cyan) drop-shadow(0 0 1px cyan);
-        }
-    }
-}
-
-[search-button-loader] {
-    padding: 25px;
-    border: 5px solid #fff;
-    filter: drop-shadow(0 0 5px cyan);
-    text-align: center;
-    line-height: 10ch;
-    // vertical-align: middle;
-    width: 10ch;
-    height: 10ch;
-    animation: loader 1s infinite linear;
-}
-
-@keyframes loader {
-    0% {   transform: rotate(0deg); border-radius: 50%; }
-    50% {  transform: rotate(90deg); border-radius: 5%; }
-    100% { transform: rotate(180deg); border-radius: 50%; }
 }
 </style>
-<script lang="ts" setup>
-import { useI18n } from 'vue-i18n';
-import { useAllShortestPaths, wiki } from '../../store/search/index';
-
-const { t } = useI18n({ useScope: 'local' });
-const {
-    isFetching,
-    fetch
-} = useAllShortestPaths();
-</script>
 <i18n lang="yaml">
 en:
     search: Search

@@ -1,32 +1,61 @@
+<script lang="ts" setup>
+import preview from "../wiki/WikiPreview.vue";
+import { wiki } from '../../store/search';
+import { useI18n } from 'vue-i18n';
+import { useMinutesSecondes } from '../../composables/time';
+import { toRefs } from '@vueuse/core';
+import { onUpdated } from 'vue';
+import { computed, ref } from '@vue/reactivity';
+import { wikiUrl } from '../../store/search/index';
+
+const { t } = useI18n({ useScope: 'local' });
+
+const { result, visiblePathCount } = wiki;
+
+const { formatedTime } = useMinutesSecondes(toRefs(wiki.result).time!);
+
+const previewFromMap = (id:number) => wiki.previewMap.get(id);
+
+const start = computed(()=>previewFromMap(result.start));
+const end   = computed(()=>previewFromMap(result.end  ));
+
+const toUrl = (t?:string) => wikiUrl.value + t?.replaceAll(" ", "_");
+
+const root = ref<HTMLElement | null>(null);
+
+onUpdated(()=>{
+    root.value?.scrollIntoView({ block: 'start',  behavior: 'smooth' });
+})
+</script>
 <template>
-    <section search-result v-if="result.paths.length > 0">
+    <section search-result ref="root" v-if="result.paths.length > 0">
         <i18n-t keypath="description" tag="p">
             <template v-slot:pathsLength>
                 <strong>{{ result.paths.length }}</strong> 
             </template>
             <template v-slot:degrees>
-                <strong>{{ result.paths?.[0].length + 1 }}</strong> 
+                <strong>{{ wiki.degree }}</strong> 
             </template>
             <template v-slot:start>
-                <a href="">{{ result.start.title }}</a>
+                <a target="_blank" :href="toUrl(start!.title)">{{ start!.title }}</a>
             </template>
             <template v-slot:end>
-                <a href="">{{ result.end.title }}</a>
+                <a target="_blank" :href="toUrl(start!.title)">{{end!.title }}</a>
             </template>
             <template v-slot:time>
                 <strong>{{ formatedTime || "" }}</strong>
             </template>
         </i18n-t>
+        <h2>{{ wiki.degree }} {{ t('degrees', wiki.degree) }}</h2>
         <h2 v-if="result.paths.length > visiblePathCount">{{ visiblePathCount }} {{ t('pathsAmong') }} <strong>{{ result.paths.length }}</strong></h2>
-        <h3 v-else ><strong>{{ result.paths.length }}</strong> {{ t('paths', result.paths.length) }}</h3>
+        <h2 v-else ><strong>{{ result.paths.length }}</strong> {{ t('paths', result.paths.length) }}</h2>
         <div search-result-paths>
             <div v-for="path in result.paths.slice(0, visiblePathCount)">
-                <preview :wiki-preview="result.start"/>
-                <preview v-for="pageId in path" :wiki-preview="result.idToTitle?.[pageId+'']!"/>
-                <preview :wiki-preview="result.end"/>
+                <preview :wiki-id="result.start" :key="result.start"/>
+                <preview v-for="pageId in path" debug  :wiki-id="pageId" :key="pageId"/>
+                <preview :wiki-id="result.end"   :key="result.end"/>
             </div>
         </div>
-        <p></p>
     </section>
 </template>
 <style lang="scss">
@@ -46,31 +75,24 @@
     flex-wrap: wrap;
     gap: 15px;
     > div {
-        border-radius: 15px;
-        border: 1px solid #0003;
+        border-radius: 10px;
+        border: 1px solid rgba(var(--heat-rgb), .7);
         max-width: 100%;
         width: min(100%, 50ch);
         display: flex;
         flex-direction: column;
+
+        & >:first-child {
+            border-radius: 10px 10px 0 0;
+        }
+        & >:last-child {
+            border-radius: 0 0 10px 10px;
+        }
         
     }
 
 }
 </style>
-<script lang="ts" setup>
-import preview from "../wiki/WikiPreview.vue";
-import { wiki } from '../../store/search';
-import { useI18n } from 'vue-i18n';
-import { useMinutesSecondes } from '../../composables/time';
-import { toRefs } from '@vueuse/core';
-
-const { t } = useI18n({ useScope: 'local' });
-
-const visiblePathCount = 20;
-const result = wiki.result;
-console.log(toRefs(wiki.result));
-const { formatedTime } = useMinutesSecondes(toRefs(wiki.result).time!);
-</script>
 <i18n lang="yaml">
 en:
     description: >
@@ -78,10 +100,12 @@ en:
         from {start} to {end} in {time}
     pathsAmong: paths among the
     paths: path | paths
+    degrees: degree | degrees 
 fr:
     description: >
         {pathsLength} chemins trouvés en {degrees} degrées de séparation 
         de {start} à {end} en {time}
     pathsAmong: chemins parmis les
-    paths: chemin | chemins 
+    paths: chemin | chemins
+    degrees: degré | degrés 
 </i18n>

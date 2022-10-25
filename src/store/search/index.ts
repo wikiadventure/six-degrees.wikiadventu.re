@@ -1,125 +1,95 @@
 import { ref, reactive, watch, computed, nextTick } from 'vue';
-import { Lang, i18n, currentLang } from '../../i18n';
+import { i18n, currentLang } from '../../i18n';
 import { loadPreview } from '../wiki/actions';
 
 export const isFetching = ref(false);
 
-export const wiki = reactive<SearchStore>({
+export const initial = ():SearchStore => ({
     search: {
         start: {
-            input: "",
-            id: "",
-            title: ""
+            id: -1,
+            input: ""
         },
         end: {
-            input: "",
-            id: "",
-            title: ""
+            id: -1,
+            input: ""
         }
     },
     result : {
-        start: {
-            id: "",
-            title: ""
-        },
-        end: {
-            id: "",
-            title: ""
-        },
-        paths: [],
-        idToTitle: {},
-        time: -1
-        
-    }
+        start: -1,
+        end: -1,
+        time: -1,
+        paths: []
+    },
+    degree: 2,
+    previewMap: new Map(),
+    visiblePathCount: 20
 })
 
+export const wiki = reactive<SearchStore>(initial());
+
 export async function fetchAllShortestPaths() {
-    isFetching.value = true;
-    wiki.result.start = wiki.search.start;
-    wiki.result.end = wiki.search.end;
+    wiki.result.start = wiki.search.start.id;
+    wiki.result.end = wiki.search.end.id;
     wiki.result.time = -1;
-    wiki.result.idToTitle = {};
     wiki.result.paths = [];
+    if (wiki.result.start == wiki.result.end) {
+        wiki.result.time = 0;
+        wiki.degree = 0;
+        wiki.result.paths.push([]);
+        return;
+    }
+    isFetching.value = true;
     try {
         const data:SearchResult = await fetch(`https://${i18n.global.locale.value}wiki-graph-serverless-lfpojybovq-od.a.run.app/all-shortest-path/${wiki.search.start.id}/to/${wiki.search.end.id}`)
                                         .then(r=>r.json());
-        wiki.result.paths = data.paths;
-        wiki.result.idToTitle = {};
-        // @ts-ignore
-        Object.entries(data.idToTitle).forEach(([k,v])=>wiki.result.idToTitle![k] = {
-            title: v.replaceAll(/_/g, " ")
-        });
+        wiki.result.paths = data.paths.map(p=>p.map(i=>Number(i)));
         wiki.result.time = data.time;
         isFetching.value = false;
-        const idSet = new Set<number>();
-        for (const path of wiki.result.paths!) {
-            for (const id of path) {
-                idSet.add(id);
-            }
+        if (wiki.result.paths[0]!=null) wiki.degree = wiki.result.paths[0]?.length + 1;
+        for (const [k,v] of Object.entries(data.idToTitle)) {
+            const id = Number(k);
+            if (wiki.previewMap.get(id)==null) wiki.previewMap.set(id, {title: v, loading: true });
         }
-        loadPreview(Array.from(idSet))
-        await nextTick();
-        document.querySelector('[search-result]')?.scrollIntoView({ block: 'end',  behavior: 'smooth' });
+        loadVisiblePathPreviews();
     } catch(e) {
         isFetching.value = false;
     }
 }
-export const searchResult = ref<SearchResult>();
 
-export function useAllShortestPaths() {
-    return {
-        fetch: fetchAllShortestPaths,
-        isFetching,
-        result: wiki.result
+export async function loadVisiblePathPreviews() {
+    const idSet = new Set<number>();
+    for (const [i, path] of wiki.result.paths.entries()) {
+        if (i > wiki.visiblePathCount) break;
+        for (const id of path) {
+            idSet.add(id);
+        }
     }
+    loadPreview(Array.from(idSet))
 }
 
-watch(currentLang, v=>{
-    const s = wiki.search.start;
-    s.input = "";
-    s.id = "";
-    s.title = "";
-    s.thumbnail = undefined;
-    s.description = undefined;
-
-    const e = wiki.search.end;
-    e.input = "";
-    e.id = "";
-    e.title = "";
-    e.thumbnail = undefined;
-    e.description = undefined;
-
-    const r = wiki.result;
-
-    const rs = r.start;
-    rs.id = "";
-    rs.title = "";
-    rs.thumbnail = undefined;
-    rs.description = undefined;
-
-    const re = r.end;
-    re.id = "";
-    re.title = "";
-    re.thumbnail = undefined;
-    re.description = undefined;
-
-    r.time = -1;
-    r.idToTitle = {};
-    r.paths = [];
+watch(currentLang, v => {
+    
+    const assign = (from:any, to:any) => {
+        for (const [k,e] of Object.entries(from)) {
+            typeof e === 'object'
+            ? Array.isArray(e)
+                ? to[k] = e
+                : e != null 
+                    && assign(e, to[k])
+            : ['string','number','bigint'].includes(typeof e) 
+                && (to[k] = e)
+        }
+    }
+    assign(initial(), wiki);
 });
 
+/**
+ * Swap the end with the start
+ */
 export function swapSearch() {
-    console.log("before : ", wiki.search);
     const s = wiki.search;
-    // [s.start, s.end] = [s.end, s.start];
-    [s.start.input, s.end.input] = [s.end.input, s.start.input];
-    [s.start.id, s.end.id] = [s.end.id, s.start.id];
-    [s.start.title, s.end.title] = [s.end.title, s.start.title];
-    [s.start.thumbnail!.height, s.end.thumbnail!.height] = [s.end.thumbnail?.height!, s.start.thumbnail?.height!];
-    [s.start.thumbnail!.width, s.end.thumbnail!.width] = [s.end.thumbnail?.width!, s.start.thumbnail?.width!];
-    [s.start.thumbnail!.source, s.end.thumbnail!.source] = [s.end.thumbnail?.source!, s.start.thumbnail?.source!];
-    [s.start.description, s.end.description] = [s.end.description, s.start.description];
-    console.log("after : ", wiki.search);
+    [s.start, s.end] = [s.end, s.start];
 }
 
 export const wikiUrl = computed(()=>`https://${currentLang.value}.wikipedia.org/wiki/`);
@@ -132,28 +102,40 @@ type SearchResult = {
 
 type SearchStore = {
     search: {
-        start:WikiPage & {input:string},
-        end:WikiPage & {input:string},
-    }
+        start: {
+            id: number,
+            input: string
+        },
+        end: {
+            id: number,
+            input: string
+        },
+    },
     result: {
-        start:WikiPage,
-        end:WikiPage,
+        start:number,
+        end:number,
         time:number,
-        paths:number[][],
-        idToTitle:{ [id: string]: Omit<WikiPage, "id"> }
-    }
+        paths:number[][]
+    },
+    degree: number,
+    previewMap: Map<number, WikiPage>,
+    visiblePathCount: number
 }
 
 export type WikiPage = {
-    id: string,// number as string
     title: string,
-    description?: string,
-    thumbnail?: {
-        source: string,
-        width: number,
-        height: number
-    } 
-}
+    description: string | null,
+    thumbnail: WikiThumbnail | null,
+    loading?: undefined,
+} | {
+    title: string,
+    description?:undefined,
+    thumbnail?: undefined,
+    loading: true,
+};
 
-type AvailableLang = 
-    Lang.eo;
+export type WikiThumbnail = {
+    source: string,
+    width: number,
+    height: number
+}
