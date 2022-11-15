@@ -19,6 +19,7 @@
   padding: 5px 10px;
   background: #0002;
   filter: drop-shadow(0 0 2px var(--heat-color)) drop-shadow(0 0 5px var(--heat-color));
+  cursor: pointer;
 
   &:is(:focus, :focus-visible) {
     outline: 2px solid var(--heat-color);

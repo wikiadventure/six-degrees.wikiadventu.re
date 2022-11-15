@@ -7,6 +7,7 @@ import { toRefs } from '@vueuse/core';
 import { onUpdated } from 'vue';
 import { computed, ref } from '@vue/reactivity';
 import { wikiUrl } from '../../store/search/index';
+import Thermometer from "../cosmetic/Thermometer.vue";
 
 const { t } = useI18n({ useScope: 'local' });
 
@@ -23,12 +24,15 @@ const toUrl = (t?:string) => wikiUrl.value + t?.replaceAll(" ", "_");
 
 const root = ref<HTMLElement | null>(null);
 
-onUpdated(()=>{
-    root.value?.scrollIntoView({ block: 'start',  behavior: 'smooth' });
+onUpdated(() => {
+    setTimeout(
+        ()=>root.value?.scrollIntoView({ block: 'start',  behavior: 'smooth' }),
+        1000
+    )
 })
 </script>
 <template>
-    <section search-result ref="root" v-if="result.paths.length > 0">
+    <section search-result ref="root" v-if="result.paths.length > 0 && start != null && end !=null">
         <i18n-t keypath="description" tag="p">
             <template v-slot:pathsLength>
                 <strong>{{ result.paths.length }}</strong> 
