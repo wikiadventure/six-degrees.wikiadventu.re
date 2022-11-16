@@ -5,7 +5,7 @@ import { onWikiPreviewMapChange } from '../../store/search/onMapChange';
 import WikiThumbnail from './WikiThumbnail.vue';
 import { WikiThumbnail as ThumbnailType } from '../../store/search';
 import SearchLoader from '../search/SearchLoader.vue';
-
+import MdiOpenInNew from '~icons/mdi/open-in-new'
 const props = defineProps({
   wikiId: {
     type: Number,
@@ -47,10 +47,10 @@ function openWiki() {
     <wiki-thumbnail v-if="!loading" :thumbnail="thumbnail"/>
     <SearchLoader v-else/>
     <h3>
-      <!-- <q-btn icon="mdi-open-in-new" v-if="!props.disableGotoWiki && title != ''"
-              type="a" target="_blank" :href="wikiUrl + title.replaceAll(' ', '_')"
-              size="sm" flat round tabindex="-1"
-      /> -->
+      <a  v-if="!props.disableGotoWiki && title != ''" tabindex="-1"
+        :href="wikiUrl + title.replaceAll(' ', '_')" target="_blank">
+        <MdiOpenInNew/>
+      </a>
       {{ (title || "???" ) }}
     </h3>
     <p>{{ description || "???" }}</p>
@@ -93,6 +93,16 @@ function openWiki() {
     > a {
       float: right;
       margin-right: -8px;
+      padding: 2px;
+      border-radius: 2px;
+      transition: all ease-in-out .2s;
+      color: white;
+      &:hover {
+        background: #fff3;
+      }
+      &:visited {
+        color: rgb(176, 0, 176);
+      }
     }
   }
 

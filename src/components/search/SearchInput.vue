@@ -38,6 +38,9 @@
     }
     > [path-start] {
         grid-area: s;
+        @media (max-width: 950px) {
+            z-index: 5;
+        }
     }
     > [path-to] {
         margin-top: 20px;

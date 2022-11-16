@@ -7,8 +7,11 @@ import ThemeSwitch from './components/setting/ThemeSwitch.vue';
 import HeatMeter from './components/cosmetic/HeatMeter.vue';
 import GlassButton from './components/cosmetic/GlassButton.vue';
 import MdiGithub from '~icons/mdi/github';
+import { useRoute } from './composables/route/index';
+import Thermometer from './components/cosmetic/Thermometer.vue';
+import Achievement from './components/cosmetic/Achievement.vue';
+useRoute();
 </script>
-
 <template>
   <HeatMeter search-app>
     <LangSwitch/>
@@ -20,10 +23,11 @@ import MdiGithub from '~icons/mdi/github';
     </section>
 		<SearchInput/>
     <SearchButton/>
+    <Thermometer/>
 		<SearchResult/>
+    <Achievement/>
 	</HeatMeter>
 </template>
-
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
