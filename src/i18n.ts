@@ -1,5 +1,5 @@
 import { usePreferredLanguages, useStorage } from '@vueuse/core';
-import { computed } from 'vue';
+import type { WritableComputedRef } from 'vue';
 import { createI18n } from 'vue-i18n';
 
 const languages = usePreferredLanguages()
@@ -34,8 +34,8 @@ export const i18n = createI18n({
 });
 
 
-export const currentLang = useStorage("lang", i18n.global.locale);
+export const currentLang = useStorage<Lang>("lang", i18n.global.locale as WritableComputedRef<Lang>);
 // Fix falsy value in storage
 if (!langsKey.includes(currentLang.value)) currentLang.value = "en";
 const [_,l] = window.location.pathname.split("/");
-if (langsKey.includes(l)) currentLang.value = l;
+if (langsKey.includes(l)) currentLang.value = l as Lang;

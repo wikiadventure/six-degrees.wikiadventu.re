@@ -1,30 +1,37 @@
 <script setup lang="ts">
 import { ref } from '@vue/reactivity';
-import { onMounted } from 'vue';
+import { onMounted, reactive } from 'vue';
 import RoundStar from '~icons/ic/round-star';
-import { achieve, Achievement } from '../../store/achievements/index';
+import { achieve, Achievement, useAchievement, AchievementKey, Achievements } from '../../store/achievements';
 const achievements = ref<HTMLDivElement>();
-achieve(Achievement.Godwin);
+const { subscribe } = useAchievement();
+
+// By default all achivement are not visible
+const defaultDisplay = (Object.keys(Achievement) as Array<keyof typeof Achievement>)
+                                .reduce<Record<AchievementKey, number>>((o,v,i)=>
+                                    Object.assign(o, {
+                                        [v]: 0
+                                    })
+                                , {} as any)
+
+const isDisplayed = reactive<Record<AchievementKey, number>>(defaultDisplay);
+
+const displayAchievementOnN = [1,5,25,42,69,100,1000,1_000_000,1_000_000_000]
+
+subscribe((a:AchievementKey)=>{
+    console.log("JaaJ");
+    const n = Achievements.value[a];
+    if (displayAchievementOnN.includes(n)) {
+        isDisplayed[a] = n;
+        setTimeout(() => isDisplayed[a] = 0, 15000);
+    }
+})
+
+
 </script>
 <template>
     <div achievements ref="achievements">
-        <div achievement>
-            <RoundStar/>
-            <p>100<span>G</span> - Godwin Law</p>
-        </div>
-        <div achievement>
-            <RoundStar/>
-            <p>100<span>G</span> - Godwin Law</p>
-        </div>
-        <div achievement>
-            <RoundStar/>
-            <p>100<span>G</span> - Godwin Law</p>
-        </div>
-        <div achievement>
-            <RoundStar/>
-            <p>100<span>G</span> - Godwin Law</p>
-        </div>
-        <div achievement>
+        <div achievement v-if="isDisplayed.Godwin">
             <RoundStar/>
             <p>100<span>G</span> - Godwin Law</p>
         </div>
@@ -47,8 +54,7 @@ achieve(Achievement.Godwin);
     background: #ff9100;
     width: 100px;
     height: 100px;
-    display: none;
-    animation: popup 10s ease-in-out forwards;
+    animation: popup 15s ease-in-out forwards;
 
     svg {
         position: absolute;
@@ -58,7 +64,7 @@ achieve(Achievement.Godwin);
         left: 10px;
         border-radius: 40px;
         object-fit: contain;
-        animation: innerpopup 10s ease-in-out forwards;
+        animation: innerpopup 15s ease-in-out forwards;
     }
 
     p {
@@ -71,7 +77,7 @@ achieve(Achievement.Godwin);
         bottom: 0;
         left: 120px;
         margin: auto;
-        animation: fade-in-out 10s linear forwards;
+        animation: fade-in-out 15s linear forwards;
     }
 
     span {
