@@ -45,15 +45,7 @@ subscribe((a:AchievementKey)=>{
             <MdiTemperatureKelvin/>
             <p>0 Kelvin! It's freezing hot! <span v-if="isDisplayed.AbsoluteZero>1">x{{isDisplayed.AbsoluteZero}}</span></p>
         </div>
-        <!-- <div achievement AbsoluteZero>
-            <MdiTemperatureKelvin/>
-            <p>0 Kelvin! It's freezing hot! <span v-if="isDisplayed.AbsoluteZero>1">x{{isDisplayed.AbsoluteZero}}</span></p>
-        </div> -->
-        <div achievement Hot v-if="isDisplayed.Hot">
-            <RoundStar/>
-            <p>6° of seperation reached! Can it be hotter? <span v-if="isDisplayed.Hot>1">x{{isDisplayed.Hot}}</span></p>
-        </div>
-        <div Hot>
+        <div Hot v-if="isDisplayed.Hot">
             <div flame>
                 <div v-for="_ in 20"></div>
             </div>
