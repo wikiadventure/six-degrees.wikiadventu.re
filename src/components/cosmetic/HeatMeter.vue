@@ -98,6 +98,44 @@ import { wiki } from '../../store/search';
                 </feTurbulence>
                 <feDisplacementMap in="SourceGraphic" scale="30" />
             </filter>
+            <filter id="Flames" filterUnits="objectBoundingBox" x="0%" y="-100%" width="100%" height="300%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.1" numOctaves="1" result="noise"
+                        stitchTiles="stitch"/>
+                <feOffset dy="0" result="off1">
+                    <animate attributeType="XML" attributeName="dy" 
+                            from="0" to="-500" dur="10s" repeatCount="indefinite" /> 
+                </feOffset>
+                <feOffset in="noise" dy="60" result="off2">
+                    <animate attributeType="XML" attributeName="dy" 
+                            from="300" to="0" dur="6s" repeatCount="indefinite" /> 
+                </feOffset>
+                <feMerge result="scrolling-noise">
+                    <feMergeNode in="off1"/>
+                    <feMergeNode in="off2"/>
+                </feMerge>
+                <feComponentTransfer result="brighter-noise">
+                    <feFuncA type="gamma" amplitude="1" exponent="0.5"/>
+                </feComponentTransfer>
+                <feComposite in="SourceGraphic" in2="brighter-noise" operator="in" result="gradient-noise"/>
+                <feComponentTransfer result="threshhold">
+                    <feFuncR type="discrete" tableValues="0 1"/>
+                    <feFuncG type="discrete" tableValues="0 1"/>
+                    <feFuncB type="discrete" tableValues="0 1"/>
+                    <feFuncA type="discrete" tableValues="0 1"/>
+                </feComponentTransfer>
+                <feFlood flood-color="#ff9" result="yellow"/>
+                <feComposite in2="threshhold" in="yellow" operator="in" result="yellow-threshhold"/>
+                <feFlood flood-color="#f33" result="red"/>
+                <feComponentTransfer in="SourceGraphic" result="exponent-gradient">
+                    <feFuncA type="gamma" exponent="3"/>
+                </feComponentTransfer>
+                <feComposite in="red" in2="exponent-gradient" operator="in" result="red-gradient"/>
+                <feComposite in2="threshhold" in="red-gradient" operator="in" result="red-gradient-threshhold"/>
+                <feMerge>
+                    <feMergeNode in="yellow-threshhold"/>
+                    <feMergeNode in="red-gradient-threshhold"/>
+                </feMerge>
+            </filter>
         </svg>
         <div heat-background></div>
         <slot></slot>
