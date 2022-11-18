@@ -1,7 +1,7 @@
 import { ref, reactive, watch, computed, nextTick } from 'vue';
 import { i18n, currentLang } from '../../i18n';
 import { loadPreview } from '../wiki/actions';
-import { checkGodwin } from '../achievements/index';
+import { checkGodwin, achieve, Achievement } from '../achievements/index';
 
 export const isFetching = ref(false);
 
@@ -38,6 +38,7 @@ export async function fetchAllShortestPaths() {
         wiki.result.time = 0;
         wiki.degree = 0;
         wiki.result.paths.push([]);
+        achieve(Achievement.AbsoluteZero);
         return;
     }
     isFetching.value = true;
@@ -48,9 +49,14 @@ export async function fetchAllShortestPaths() {
         wiki.result.time = data.time;
         isFetching.value = false;
 
-        checkGodwin(wiki.result.end);
+        setTimeout(() => checkGodwin(wiki.result.end), 2000);
 
         if (wiki.result.paths[0]!=null) wiki.degree = wiki.result.paths[0]?.length + 1;
+
+        if (wiki.degree == 6) setTimeout(() => achieve(Achievement.Hot), 5000);
+        if (wiki.degree > 6) setTimeout(() => achieve(Achievement.OverHeat), 5000);
+        if (wiki.result.paths.length == 42) setTimeout(() => achieve(Achievement.FourtyTwo), 5000);
+
         for (const [k,v] of Object.entries(data.idToTitle)) {
             const id = Number(k);
             if (wiki.previewMap.get(id)==null) wiki.previewMap.set(id, {title: v, loading: true });

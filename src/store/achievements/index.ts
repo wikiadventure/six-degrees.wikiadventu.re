@@ -1,23 +1,23 @@
 import { useStorage } from '@vueuse/core';
 import { Lang, currentLang } from '../../i18n';
 import { onUnmounted } from 'vue';
-import { removeItem } from '../../utils/index';
+import { removeItem } from '../../utils';
 
 export enum Achievement {
     Godwin,
     AbsoluteZero,
     Hot,
     OverHeat,
-    KevinBacon
+    KevinBacon,
+    FourtyTwo
 }
 
 export type AchievementKey = keyof typeof Achievement;
 
-const defaultAchivements = (Object.keys(Achievement) as Array<keyof typeof Achievement>)
-                                .reduce<Record<AchievementKey, number>>((o,v,i)=>
-                                    Object.assign(o, {
-                                        [v]: 0
-                                    })
+const defaultAchivements = (Object.values(Achievement) as Array<keyof typeof Achievement>)
+                                .reduce<Record<AchievementKey, number>>((o,v,i)=>(
+                                    typeof v != 'number' ?
+                                    Object.assign(o, {[v]: 0}): o)
                                 , {} as any)
 
 export const Achievements = useStorage("achievements", defaultAchivements)
@@ -25,7 +25,6 @@ export const Achievements = useStorage("achievements", defaultAchivements)
 const subs:((a:AchievementKey)=>void)[] = []
 
 export function achieve(a:Achievement) {
-    console.log("JaaJ");
     Achievements.value[Achievement[a] as AchievementKey]++;
     subs.forEach(cb=>cb(Achievement[a] as AchievementKey));
 }

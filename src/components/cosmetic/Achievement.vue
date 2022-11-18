@@ -33,7 +33,23 @@ subscribe((a:AchievementKey)=>{
     <div achievements ref="achievements">
         <div achievement v-if="isDisplayed.Godwin">
             <RoundStar/>
-            <p>100<span>G</span> - Godwin Law</p>
+            <p>Godwin Law <span v-if="isDisplayed.Godwin>1">x{{isDisplayed.Godwin}}</span></p>
+        </div>
+        <div achievement v-if="isDisplayed.AbsoluteZero">
+            <RoundStar/>
+            <p>0 Kelvin! It's freezing hot! <span v-if="isDisplayed.AbsoluteZero>1">x{{isDisplayed.AbsoluteZero}}</span></p>
+        </div>
+        <div achievement v-if="isDisplayed.Hot">
+            <RoundStar/>
+            <p>6° of seperation reached! Can it be hotter? <span v-if="isDisplayed.Hot>1">x{{isDisplayed.Hot}}</span></p>
+        </div>
+        <div achievement v-if="isDisplayed.OverHeat">
+            <RoundStar/>
+            <p>OVERHEAT! You broke the theorie. <span v-if="isDisplayed.OverHeat>1">x{{isDisplayed.OverHeat}}</span></p>
+        </div>
+        <div achievement>
+            <RoundStar/>
+            <p>OVERHEAT! You broke the theorie. <span v-if="isDisplayed.OverHeat>1">x{{isDisplayed.OverHeat}}</span></p>
         </div>
     </div>
 </template>
@@ -49,126 +65,74 @@ subscribe((a:AchievementKey)=>{
 }
 [achievement] {
     position: relative;
-    bottom: 25px;
-    border-radius: 50px;
+    border-radius: 100vmax;
     background: #ff9100;
-    width: 100px;
-    height: 100px;
+    width: 8rem;
+    max-width: 100vw;
+    height: 8rem;
     animation: popup 15s ease-in-out forwards;
+    display: flex;
+    align-items: center;
 
     svg {
-        position: absolute;
-        width: 80px;
-        height: 80px;
-        top: 10px;
-        left: 10px;
-        border-radius: 40px;
-        object-fit: contain;
+        padding: 1rem;
+        min-width: 8rem;
+        min-height: 8rem;
+        transform-origin: center;
         animation: innerpopup 15s ease-in-out forwards;
     }
 
     p {
-        position: absolute;
-        height: 22px;
-        color: #ffffff;
-        font-weight: bold;
-        font-size: 22px;
-        top: -5px;
-        bottom: 0;
-        left: 120px;
-        margin: auto;
+        font-size: 1.5rem;
+        color: #fff;
         animation: fade-in-out 15s linear forwards;
+        margin: 0 1em 0 0;
     }
 
     span {
-        position: relative;
-        background: #ffffff;
+        background: #fff;
         color: #ff9100;
-        font-size: 14px;
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        margin: 0 4px;
-        border-radius: 10px;
-        overflow: hidden;
-        text-align: center;
+        border-radius: 100vmax;
+        padding: .1rem;
     }
 
         
     @keyframes popup {
-        0%{
+        0%, 100% {
             transform: scale(0);
-            transform-origin: center;
         }
-        5% {
+        5%, 95% {
             transform: scale(1.1);
         }
-        10% {
+        10%, 90% {
             transform: scale(1);
         }
-        15% {
-            width: 100px;
+        15%, 85% {
+            width: 8rem;
         }
-        20%{
-            width: 400px;
-        }
-        80%{
-            width: 400px;
-        }
-        85% {
-            width: 100px;
-        }
-        90% {
-            transform: scale(1);
-        }
-        95% {
-            transform: scale(1.1);
-        }
-        100% {
-            transform: scale(0);
+        20%, 80%{
+            width: 32rem;
         }
     }
 
     @keyframes innerpopup {
-        0%{
+        0%, 100% {
             transform: scale(0);
-            transform-origin: center;
         }
-        10% {
+        10%, 90% {
             transform: scale(1.1);
         }
-        15% {
+        15%, 85% {
             transform: scale(1);
-        }
-        85% {
-            transform: scale(1);
-        }
-        90% {
-            transform: scale(1.1);
-        }
-        100% {
-            transform: scale(0);
         }
     }
 
     @keyframes fade-in-out {
-        0%{
+        0%, 20%, 80%, 100% {
             opacity: 0;
         }
-        20%{
-            opacity: 0;
-        }
-        25% {
+        25%, 75% {
             opacity: 1;
-        }
-        75% {
-            opacity: 1;
-        }
-        80% {
-            opacity: 0;
-        }
-        100% {
-            opacity: 0;
         }
     }
 
