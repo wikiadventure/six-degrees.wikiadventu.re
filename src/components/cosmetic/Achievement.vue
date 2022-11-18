@@ -106,7 +106,7 @@ subscribe((a:AchievementKey)=>{
         position: relative;
         animation: fire-drop 3s infinite ease-in-out;
         [achievement] {
-            background: linear-gradient(red, orange);
+            background: radial-gradient(red, orange);
             // border: 1px solid #000;
             // filter: url(#Flames);
             
@@ -146,7 +146,17 @@ subscribe((a:AchievementKey)=>{
             filter: contrast(2);
             mix-blend-mode: color-burn;
             z-index: -1;
-            animation: fade-in-out 15s linear forwards;
+            animation: flame-in-out 15s linear forwards;
+
+            @keyframes flame-in-out {
+                0%, 100% {
+                    opacity: 0;
+                }
+                5%, 95% {
+                    opacity: 1;
+                }
+            }
+
             $n: 20;
             $t: 1.16;
             $r: 10;
