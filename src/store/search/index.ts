@@ -56,6 +56,7 @@ export async function fetchAllShortestPaths() {
         if (wiki.degree == 6) setTimeout(() => achieve(Achievement.Hot), 5000);
         if (wiki.degree > 6) setTimeout(() => achieve(Achievement.OverHeat), 5000);
         if (wiki.result.paths.length == 42) setTimeout(() => achieve(Achievement.FourtyTwo), 5000);
+        if (wiki.result.paths.length > 9000) setTimeout(() => achieve(Achievement.Over9000), 5000);
 
         for (const [k,v] of Object.entries(data.idToTitle)) {
             const id = Number(k);

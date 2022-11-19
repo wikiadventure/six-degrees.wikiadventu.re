@@ -8,6 +8,7 @@ export enum Achievement {
     AbsoluteZero,
     Hot,
     OverHeat,
+    Over9000,
     KevinBacon,
     FourtyTwo
 }

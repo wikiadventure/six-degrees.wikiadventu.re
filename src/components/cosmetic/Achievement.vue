@@ -3,9 +3,11 @@ import { ref } from '@vue/reactivity';
 import { onMounted, reactive } from 'vue';
 
 // icons
-import RoundStar from '~icons/ic/round-star';
 import MakiReligiousJewish from '~icons/maki/religious-jewish';
-import MdiTemperatureKelvin from '~icons/mdi/temperature-kelvin'
+import MdiTemperatureKelvin from '~icons/mdi/temperature-kelvin';
+import CodiconFlame from '~icons/codicon/flame';
+import GameIconsBurningSkull from '~icons/game-icons/burning-skull';
+import MaterialSymbolsStar from '~icons/material-symbols/star'
 
 
 import { achieve, Achievement, useAchievement, AchievementKey, Achievements } from '../../store/achievements';
@@ -33,30 +35,43 @@ subscribe((a:AchievementKey)=>{
     }
 })
 
+const randomCssVar = (n:number) => Array.from({length: 5}, (_, i) => i).map(i=>{return`--r${i}:${Math.random()};`}).join("");
+console.log('random : ', randomCssVar(5));
 
 </script>
 <template>
     <div achievements ref="achievements">
         <div achievement Godwin v-if="isDisplayed.Godwin">
             <MakiReligiousJewish/>
-            <p>Godwin Law <span v-if="isDisplayed.Godwin>1">x{{isDisplayed.Godwin}}</span></p>
+            <div>Godwin Law <span v-if="isDisplayed.Godwin>1">x{{isDisplayed.Godwin}}</span></div>
         </div>
         <div achievement AbsoluteZero v-if="isDisplayed.AbsoluteZero">
             <MdiTemperatureKelvin/>
-            <p>0 Kelvin! It's freezing hot! <span v-if="isDisplayed.AbsoluteZero>1">x{{isDisplayed.AbsoluteZero}}</span></p>
+            <div>0 Kelvin! It's freezing hot! <span v-if="isDisplayed.AbsoluteZero>1">x{{isDisplayed.AbsoluteZero}}</span></div>
         </div>
-        <div Hot v-if="isDisplayed.Hot">
+        <div Hot v-if="isDisplayed.AbsoluteZero">
             <div flame>
-                <div v-for="_ in 20"></div>
+                <div v-for="_ in 50" :style="randomCssVar(5)"></div>
             </div>
             <div achievement>
-                <RoundStar/>
-                <p>6° of seperation reached! Can it be hotter? <span v-if="isDisplayed.Hot>1">x{{isDisplayed.Hot}}</span></p>
+                <CodiconFlame/>
+                <div>6° of seperation reached! Can it be hotter? <span v-if="isDisplayed.Hot>1">x{{isDisplayed.Hot}}</span></div>
             </div>
         </div>
-        <div achievement OverHeat v-if="isDisplayed.OverHeat">
-            <RoundStar/>
-            <p>OVERHEAT! You broke the theory. <span v-if="isDisplayed.OverHeat>1">x{{isDisplayed.OverHeat}}</span></p>
+        <div OverHeat v-if="isDisplayed.AbsoluteZero">
+            <div flame>
+                <div v-for="_ in 50" :style="randomCssVar(5)"></div>
+            </div>
+            <div achievement>
+                <GameIconsBurningSkull/>
+                <div>OVERHEAT! You broke the theory. <span v-if="isDisplayed.OverHeat>1">x{{isDisplayed.OverHeat}}</span></div>
+            </div>
+        </div>
+        <div achievement Over9000 v-if="isDisplayed.Over9000">
+            <MaterialSymbolsStar/>
+            <div>It's over 9000<span v-if="isDisplayed.AbsoluteZero>1">x{{isDisplayed.AbsoluteZero}}</span>
+                <p>Get over 9000 paths in 1 search!</p>
+            </div>
         </div>
     </div>
 </template>
@@ -80,6 +95,7 @@ subscribe((a:AchievementKey)=>{
     animation: popup 15s ease-in-out forwards;
     display: flex;
     align-items: center;
+    color: #fff;
 
     &[Godwin] {
         background: #de0000;
@@ -87,6 +103,7 @@ subscribe((a:AchievementKey)=>{
             color: white;
         }
     }
+
     &[AbsoluteZero] {
         background: #000;
         border: 1px solid #fff;
@@ -94,42 +111,80 @@ subscribe((a:AchievementKey)=>{
             color: white;
         }
     }
-    @at-root [Hot]  {
-        position: relative;
-        animation: fire-drop 3s infinite ease-in-out;
+    &[Over9000] {
+        box-sizing: content-box;
+        border: 5px solid #FFF467; 
+        background:
+            radial-gradient(
+                circle at 2.2rem 2.2rem, #fffd, #fffc .5rem, #fff0 1rem
+            ),
+            radial-gradient(
+                circle at 2.5rem 2.5rem, #FAB637f5, #9a5500ef
+            ),
+            ;
+        svg {
+            color: #AA2A1D;
+            padding: 3rem;
+            min-width: 2rem;
+            min-height: 2rem;
+        }
+        box-shadow: 0 0 50px 0 #ffff00bb, 0 0 7px 0 #fff47e, 0 0 5px 0 #fff47e;
+    }
+    @at-root [Hot] {
+        --flame-1: orange;
+        --flame-2: red;
+        --speed: 1.16;
         [achievement] {
             background: radial-gradient(red, orange);
             // border: 1px solid #000;
             // filter: url(#Flames);
-            
-            @keyframes fire-drop {
-                0%, 100% {
-                    filter: drop-shadow(0 0 2px orange) drop-shadow(0 0 10px orange) drop-shadow(0 0 20px #f00);
-                }
-                20% {
-                    filter: drop-shadow(-1px 2px 2px orange) drop-shadow(-2px 1px 10px orange) drop-shadow(-2px 1px 20px #f00);
-                }
-                40% {
-                    filter: drop-shadow(1px -2px 2px orange) drop-shadow(3px -4px 10px orange) drop-shadow(3px -4px 20px #f00);
-                }
-                60% {
-                    filter: drop-shadow(-2px -2px 2px orange) drop-shadow(-2px -3px 10px orange) drop-shadow(-2px -3px 20px #f00);
-                }
-                80% {
-                    filter: drop-shadow(3px 3px 2px orange) drop-shadow(1px 2px 0 10px orange) drop-shadow(1px 2px 20px #f00);
-                }
-            }
 
             border: 1px solid orange;
-            svg {
-                color: white;
-            }
         }
+    }
+    @at-root [OverHeat] {
+        --flame-1: white;
+        --flame-2: orange;
+        --speed: .9;
+        [achievement] {
+            background: radial-gradient(orange, white);
+            // border: 1px solid #000;
+            // filter: url(#Flames);
+
+            border: 1px solid white;
+            color: #fff;
+            text-shadow: 0 0 3px #000, 0 0 1px #000;
+        }
+    }
+
+    
+    @keyframes fire-drop {
+        0%, 100% {
+            filter: drop-shadow(0 0 2px orange) drop-shadow(0 0 10px orange) drop-shadow(0 0 20px #f00);
+        }
+        20% {
+            filter: drop-shadow(-1px 2px 2px orange) drop-shadow(-2px 1px 10px orange) drop-shadow(-2px 1px 20px #f00);
+        }
+        40% {
+            filter: drop-shadow(1px -2px 2px orange) drop-shadow(3px -4px 10px orange) drop-shadow(3px -4px 20px #f00);
+        }
+        60% {
+            filter: drop-shadow(-2px -2px 2px orange) drop-shadow(-2px -3px 10px orange) drop-shadow(-2px -3px 20px #f00);
+        }
+        80% {
+            filter: drop-shadow(3px 3px 2px orange) drop-shadow(1px 2px 0 10px orange) drop-shadow(1px 2px 20px #f00);
+        }
+    }
+    
+    @at-root :is([Hot], [OverHeat])  {
+        position: relative;
+        animation: fire-drop 3s infinite ease-in-out;
 
         @keyframes fire {
             0% {bottom: -15%; opacity: 1;}
             100% {bottom: 90%; opacity: 0;}
         }
+
         [flame] {
             position: absolute;
             width: 100%;
@@ -148,56 +203,54 @@ subscribe((a:AchievementKey)=>{
                     opacity: 1;
                 }
             }
-
-            $n: 20;
-            $t: 1.16;
-            $r: 10;
+            --s: 1.5rem;
             > div {
                 position: absolute;  
-                background: #fa0;
+                background: var(--flame-1);
                 border-radius: 50%;
-                animation: fire $t * 1s infinite ease-in;
+                animation: fire calc(var(--speed) * 1s) infinite ease-in;
                 filter: blur(26px);
-                @for $i from 0 to $n {
-                    &:nth-child(#{$i + 1}) {
-                    $rand: random() + 1;
-                    width: $rand * $r * 1%; height: $rand * $r * 1%;
-                    animation-delay: random() * $t * -1s;
-                    left: random() * 70%;
-                    &:after {
-                        content: "";
-                        display: block;
-                        position: absolute;
-                        top: random() * -30%; left: random() * 30%;
-                        width: 30%; height: 60%;
-                        background: red;
-                        border-radius: 50%;
-                    }
-                    }
-                } 
+                --size: calc(1rem + var(--r0) * var(--s));
+                width: var(--size); height: var(--size);
+                animation-delay: calc(var(--r1) * var(--speed) * -1s);
+                left: clamp(var(--size),calc(var(--r2) * 100%), calc(100% - var(--size) * 2));
+                &:after {
+                    content: "";
+                    display: block;
+                    position: absolute;
+                    top: calc(var(--r3) * -30%); left: calc(var(--r4) * 30%);
+                    width: 30%; height: 60%;
+                    background: var(--flame-2);
+                    border-radius: 50%;
+                }
             }
 
         }
     }
 
-    svg {
+    > svg {
+        box-sizing: content-box;
         padding: 1rem;
-        min-width: 8rem;
-        min-height: 8rem;
+        min-width: 6rem;
+        min-height: 6rem;
         transform-origin: center;
         animation: innerpopup 15s ease-in-out forwards;
+
     }
 
-    p {
+    > div {
         font-size: 1.5rem;
-        color: #fff;
         animation: fade-in-out 15s linear forwards;
         margin: 0 1em 0 0;
     }
+    p {
+        font-size: 0.75em;
+        margin: 0;
+    }
 
     span {
-        background: #fff;
-        color: #ff9100;
+        background: currentColor;
+        // color: #ff9100;
         border-radius: 100vmax;
         padding: .1rem;
     }
