@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from '@vue/reactivity';
-import { onMounted, reactive } from 'vue';
+import { reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // icons
 import MakiReligiousJewish from '~icons/maki/religious-jewish';
@@ -11,6 +12,9 @@ import MaterialSymbolsStar from '~icons/material-symbols/star'
 
 
 import { achieve, Achievement, useAchievement, AchievementKey, Achievements } from '../../store/achievements';
+
+const { t } = useI18n({ useScope: 'local' });
+
 const achievements = ref<HTMLDivElement>();
 const { subscribe } = useAchievement();
 
@@ -27,7 +31,6 @@ const isDisplayed = reactive<Record<AchievementKey, number>>(defaultDisplay);
 const displayAchievementOnN = [1,5,25,42,69,100,1000,1_000_000,1_000_000_000]
 
 subscribe((a:AchievementKey)=>{
-    console.log("JaaJ");
     const n = Achievements.value[a];
     if (displayAchievementOnN.includes(n)) {
         isDisplayed[a] = n;
@@ -42,40 +45,41 @@ console.log('random : ', randomCssVar(5));
 <template>
     <div achievements ref="achievements">
         <div achievement Godwin v-if="isDisplayed.Godwin">
-            <MakiReligiousJewish/>
-            <div>Godwin Law <span v-if="isDisplayed.Godwin>1">x{{isDisplayed.Godwin}}</span></div>
+            <figure></figure>
+            <div>{{ t('Godwin') }} <span v-if="isDisplayed.Godwin>1">x{{isDisplayed.Godwin}}</span></div>
         </div>
         <div achievement AbsoluteZero v-if="isDisplayed.AbsoluteZero">
             <MdiTemperatureKelvin/>
-            <div>0 Kelvin! It's freezing hot! <span v-if="isDisplayed.AbsoluteZero>1">x{{isDisplayed.AbsoluteZero}}</span></div>
+            <div>{{ t('AbsoluteZero') }}  <span v-if="isDisplayed.AbsoluteZero>1">x{{isDisplayed.AbsoluteZero}}</span></div>
         </div>
-        <div Hot v-if="isDisplayed.AbsoluteZero">
+        <div Hot v-if="isDisplayed.Hot">
             <div flame>
                 <div v-for="_ in 50" :style="randomCssVar(5)"></div>
             </div>
             <div achievement>
                 <CodiconFlame/>
-                <div>6° of seperation reached! Can it be hotter? <span v-if="isDisplayed.Hot>1">x{{isDisplayed.Hot}}</span></div>
+                <div>{{ t('Hot') }}  <span v-if="isDisplayed.Hot>1">x{{isDisplayed.Hot}}</span></div>
             </div>
         </div>
-        <div OverHeat v-if="isDisplayed.AbsoluteZero">
+        <div OverHeat v-if="isDisplayed.OverHeat">
             <div flame>
                 <div v-for="_ in 50" :style="randomCssVar(5)"></div>
             </div>
             <div achievement>
                 <GameIconsBurningSkull/>
-                <div>OVERHEAT! You broke the theory. <span v-if="isDisplayed.OverHeat>1">x{{isDisplayed.OverHeat}}</span></div>
+                <div>{{ t('OverHeat') }}  <span v-if="isDisplayed.OverHeat>1">x{{isDisplayed.OverHeat}}</span></div>
             </div>
         </div>
         <div achievement Over9000 v-if="isDisplayed.Over9000">
             <MaterialSymbolsStar/>
             <div>It's over 9000<span v-if="isDisplayed.AbsoluteZero>1">x{{isDisplayed.AbsoluteZero}}</span>
-                <p>Get over 9000 paths in 1 search!</p>
+                <p>{{ t('Over9000') }} </p>
             </div>
         </div>
     </div>
 </template>
 <style lang="scss">
+
 [achievements] {
     position: fixed;
     bottom: 0px;
@@ -85,6 +89,7 @@ console.log('random : ', randomCssVar(5));
     padding: 15px 0;
     z-index: 10000;
 }
+
 [achievement] {
     position: relative;
     border-radius: 100vmax;
@@ -98,9 +103,24 @@ console.log('random : ', randomCssVar(5));
     color: #fff;
 
     &[Godwin] {
-        background: #de0000;
-        svg {
-            color: white;
+        background: 
+            radial-gradient( circle at 4rem 4rem,
+                 #fff 2.2rem, transparent 2.2rem
+            ),
+            linear-gradient(
+                transparent 3.2rem, #fff 3.2rem, #fff 4.8rem, transparent 4.8rem
+            ),
+            linear-gradient(
+                90deg, transparent 3.2rem, #fff 3.2rem, #fff 4.8rem, transparent 4.8rem
+            ),
+
+            #de0000;
+        color: #000;
+        figure {
+            background: 
+                radial-gradient( circle at 4rem 4rem,
+                    #000 1.7rem, transparent 1.7rem
+                ),
         }
     }
 
@@ -111,6 +131,7 @@ console.log('random : ', randomCssVar(5));
             color: white;
         }
     }
+
     &[Over9000] {
         box-sizing: content-box;
         border: 5px solid #FFF467; 
@@ -228,13 +249,14 @@ console.log('random : ', randomCssVar(5));
         }
     }
 
-    > svg {
+    > :is(svg, figure) {
         box-sizing: content-box;
         padding: 1rem;
         min-width: 6rem;
         min-height: 6rem;
         transform-origin: center;
         animation: innerpopup 15s ease-in-out forwards;
+        margin: 0;
 
     }
 
@@ -297,3 +319,17 @@ console.log('random : ', randomCssVar(5));
 
 }
 </style>
+<i18n lang="yaml">
+en:
+    Godwin: Godwin law.
+    AbsoluteZero: 0 Kelvin! Entropy is a lie.
+    Hot: 6° of seperation reached! Can it be hotter?
+    OverHeat: OVERHEAT! You broke the theory.
+    Over9000: Get over 9000 paths in 1 search.
+fr:
+    Godwin: Point Godwin.
+    AbsoluteZero: 0 Kelvin! L'entropie est un mensonge.
+    Hot: 6° de seperation atteint! Peut on faire plus chaud?
+    OverHeat: Surchauffe! Vous avez enfreint la théorie.
+    Over9000: Obtenez plus de 9000 chemins en 1 recherche.
+</i18n>
