@@ -15,7 +15,7 @@ type LangType = typeof langs;
 export default async (req: Request, ctx: Context) => {
 
     const res:Response = await ctx.next();
-    if (res.headers.get("content-type") != "text/html") return res;
+    // if (res.headers.get("content-type") != "text/html") return res;
     const url = new URL(req.url);
     const p = url.pathname.endsWith("/") ? url.pathname.slice(0, -1) : url.pathname;
     const [, lang, startS, endS, ...rest] = p.split(/\//);
