@@ -27,7 +27,7 @@ export default async (req: Request, ctx: Context) => {
 
     // @ts-ignore
     const description = langs[lang];
-    const ogUrl = `https://open-graph-six-degrees-of-wiki-adventure.vercel.app/api/og?lang=${lang}&start=${start}&end=${end}`;
+    const ogUrl = `https://og-six-degrees.wikiadventu.re/api/og?lang=${lang}&start=${start}&end=${end}`;
 
     const page = await res.text();
     
