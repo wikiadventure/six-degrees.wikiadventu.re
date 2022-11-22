@@ -33,6 +33,7 @@ export default async (req: Request, ctx: Context) => {
     
     const updated = page.replace('<!--OpenGraph-->',/*html*/`
         <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@adventure_wiki">
         <meta name="twitter:title" content="Six Degrees of Wiki Adventure">
         <meta name="twitter:description" content="${description}">
         <meta name="twitter:image" content="${ogUrl}">
