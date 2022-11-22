@@ -23,7 +23,7 @@ export default async (req: Request, ctx: Context) => {
     if (!langsKey.includes(lang)) return res;
 
     const [start, end] = [parseInt(startS), parseInt(endS)];
-    if (start <= 0 || end <= 0) return res;
+    if (!(start > 0 && end > 0)) return res;
 
     // @ts-ignore
     const description = langs[lang];
