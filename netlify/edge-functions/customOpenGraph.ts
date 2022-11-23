@@ -35,18 +35,17 @@ export default async (req: Request, ctx: Context) => {
     const page = await res.text();
     
     const updated = page.replace('<!--OpenGraph-->',/*html*/`
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:site" content="@adventure_wiki">
-        <meta name="twitter:title" content="Six Degrees of Wiki Adventure">
-        <meta name="twitter:description" content="${description}">
-        <meta name="twitter:image" content="${ogUrl}">
-        <meta name="twitter:image:alt" content="Thumbnail from Wikipédia" />
-        
-        <meta property="og:type" content="website">
-        <meta property="og:title" content="Six Degrees of Wiki Adventure">
-        <meta property="og:description" content="${description}">
-        <meta property="og:image" content="${ogUrl}">
-        <meta property="og:image:alt" content="Thumbnail from Wikipédia" />
+    <meta name="twitter:card" content="summary_large_image" >
+    <meta name="twitter:site" content="@adventure_wiki" >
+    <meta name="twitter:title" content="Six Degrees of Wiki Adventure" >
+    <meta name="twitter:description" content="${description}" >
+    <meta name="twitter:image" content="${ogUrl}">
+    <meta name="twitter:image:alt" content="Thumbnail from Wikipédia" >
+    <meta property="og:type" content="website" >
+    <meta property="og:title" content="Six Degrees of Wiki Adventure" >
+    <meta property="og:description" content="${description}" >
+    <meta property="og:image" content="${ogUrl}" >
+    <meta property="og:image:alt" content="Thumbnail from Wikipédia" >
     `)
     console.log("updated", updated);
     return new Response(updated, res);
