@@ -48,7 +48,8 @@ export default async (req: Request, ctx: Context) => {
     <meta property="og:image:alt" content="Thumbnail from Wikipédia" >
     `)
     // console.log("updated", updated);
-    const newRes = new Response(updated);
+    const newRes = new Response(updated, res);
+    newRes.headers.delete("content-length");
     console.log("old : ", res);
     console.log("new : ", newRes);
     return newRes;
