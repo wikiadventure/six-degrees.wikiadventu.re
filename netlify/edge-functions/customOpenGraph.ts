@@ -30,8 +30,8 @@ export default async (req: Request, ctx: Context) => {
 
     // @ts-ignore
     const description = langs[lang];
-    // const ogUrl = `https://og-six-degrees.wikiadventu.re/api/og?lang=${lang}&start=${start}&end=${end}`;
-    const ogUrl = 'https://picsum.photos/1200/630';
+    const ogUrl = `https://og-six-degrees.wikiadventu.re/api/og?lang=${lang}&start=${start}&end=${end}`;
+    // const ogUrl = 'https://picsum.photos/1200/630';
     const page = await res.text();
     
     const updated = page.replace('<!--OpenGraph-->',/*html*/`
@@ -49,8 +49,6 @@ export default async (req: Request, ctx: Context) => {
     `)
     // console.log("updated", updated);
     const newRes = new Response(updated, res);
-    newRes.headers.delete("content-length");
-    console.log("old : ", res);
-    console.log("new : ", newRes);
+    newRes.headers.set("content-length", updated.length.toString());
     return newRes;
 };
