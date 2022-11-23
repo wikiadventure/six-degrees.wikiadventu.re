@@ -49,6 +49,6 @@ export default async (req: Request, ctx: Context) => {
     `)
     // console.log("updated", updated);
     const newRes = new Response(updated, res);
-    newRes.headers.set("content-length", updated.length.toString());
+    newRes.headers.delete("content-length");
     return newRes;
 };
