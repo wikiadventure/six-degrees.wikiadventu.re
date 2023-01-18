@@ -4,10 +4,10 @@ import { onMounted, ref } from 'vue'
 const userManager = new UserManager({
     authority: 'https://nervous-wozniak-xhrj507314.projects.oryapis.com',
     client_id: '9c201800-416c-4551-977c-7598eb122ee2',
-    redirect_uri: 'http://localhost:4001/callback',
+    redirect_uri: window.location.origin+"/callback",
     response_type: 'code',
     scope: 'openid profile offline_access',
-    post_logout_redirect_uri: 'http://localhost:4001',
+    post_logout_redirect_uri: window.location.origin,
     userStore: new WebStorageStateStore({ store: window.localStorage })
 })
 
