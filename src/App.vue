@@ -3,19 +3,19 @@ import SearchInput from './components/search/SearchInput.vue';
 import SearchResult from './components/search/SearchResult.vue';
 import SearchButton from './components/search/SearchButton.vue';
 import LangSwitch from './components/setting/LangSwitch.vue';
-import ThemeSwitch from './components/setting/ThemeSwitch.vue';
+// import ThemeSwitch from './components/setting/ThemeSwitch.vue';
 import HeatMeter from './components/cosmetic/HeatMeter.vue';
 import GlassButton from './components/cosmetic/GlassButton.vue';
 import MdiGithub from '~icons/mdi/github';
-import { useRoute } from './composables/route/index';
 import Thermometer from './components/cosmetic/Thermometer.vue';
 import Achievement from './components/cosmetic/Achievement.vue';
-useRoute();
+import AuthSection from './components/auth/AuthSection.vue';
 </script>
 <template>
   <HeatMeter search-app>
     <LangSwitch/>
     <!-- <ThemeSwitch/> -->
+    <AuthSection/>
 		<h1 title="Six Degrees Of Wiki Adventure">🌡️ 6° of Wiki Adventure</h1>
     <section more-about>
       <!-- <GlassButton href="#">About</GlassButton> -->

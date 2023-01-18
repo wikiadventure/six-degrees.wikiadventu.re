@@ -8,7 +8,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ory/client": "^1.1.5",
+    "@supabase/supabase-js": "^2.1.1",
     "@vueuse/core": "^9.1.0",
+    "oidc-client-ts": "^2.2.0",
     "vue": "^3.2.25",
     "vue-i18n": "^9.2.2"
   },
@@ -16,6 +19,7 @@
     "@iconify-json/codicon": "^1.1.17",
     "@iconify-json/game-icons": "^1.1.0",
     "@iconify-json/ic": "^1.1.9",
+    "@iconify-json/logos": "^1.1.19",
     "@iconify-json/maki": "^1.1.13",
     "@iconify-json/material-symbols": "^1.1.20",
     "@iconify-json/mdi": "^1.1.34",

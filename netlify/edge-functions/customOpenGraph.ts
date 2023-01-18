@@ -1,3 +1,4 @@
+// @ts-ignore
 import { Context } from "netlify:edge";
 
 const langs = {
@@ -10,28 +11,21 @@ const langs = {
   
 const langsKey = Object.keys(langs);
 
-type LangType = typeof langs;
-
 export default async (req: Request, ctx: Context) => {
-    // console.log("req", req);
     const res:Response = await ctx.next();
-    // if (res.headers.get("content-type") != "text/html") return res;
+    if (res.headers.get("content-type") != "text/html") return res;
     const url = new URL(req.url);
     const p = url.pathname.endsWith("/") ? url.pathname.slice(0, -1) : url.pathname;
-    // console.log("res url p", res, url, p);
     const [, lang, startS, endS, ...rest] = p.split(/\//);
-    // console.log("lang startS endS  ...rest", lang, startS, endS, ...rest);
     if (rest.length > 0) return res;
     if (!langsKey.includes(lang)) return res;
 
     const [start, end] = [parseInt(startS), parseInt(endS)];
-    // console.log("start end", start, end);
     if (!(start > 0 && end > 0)) return res;
 
     // @ts-ignore
     const description = langs[lang];
     const ogUrl = `https://og-six-degrees.wikiadventu.re/api/og?lang=${lang}&start=${start}&end=${end}`;
-    // const ogUrl = 'https://picsum.photos/1200/630';
     const page = await res.text();
     
     const updated = page.replace('<!--OpenGraph-->',/*html*/`
@@ -47,7 +41,6 @@ export default async (req: Request, ctx: Context) => {
     <meta property="og:image" content="${ogUrl}" >
     <meta property="og:image:alt" content="Thumbnail from Wikipédia" >
     `)
-    // console.log("updated", updated);
     const newRes = new Response(updated, res);
     newRes.headers.delete("content-length");
     return newRes;
