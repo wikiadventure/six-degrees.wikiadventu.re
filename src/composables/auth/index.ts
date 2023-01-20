@@ -2,7 +2,7 @@ import { User, UserManager, WebStorageStateStore } from 'oidc-client-ts'
 import { onMounted, ref } from 'vue'
 
 const userManager = new UserManager({
-    authority: 'http://localhost:4000',
+    authority: 'https://nervous-wozniak-xhrj507314.projects.oryapis.com',
     client_id: '9c201800-416c-4551-977c-7598eb122ee2',
     redirect_uri: "https://six-degrees.wikiadventu.re/callback",
     response_type: 'code',
