@@ -2,9 +2,9 @@ import { User, UserManager, WebStorageStateStore } from 'oidc-client-ts'
 import { onMounted, ref } from 'vue'
 
 const userManager = new UserManager({
-    authority: 'https://nervous-wozniak-xhrj507314.projects.oryapis.com',
+    authority: 'http://localhost:4000',
     client_id: '9c201800-416c-4551-977c-7598eb122ee2',
-    redirect_uri: window.location.origin+"/callback",
+    redirect_uri: "https://six-degrees.wikiadventu.re/callback",
     response_type: 'code',
     scope: 'openid profile offline_access',
     post_logout_redirect_uri: window.location.origin,
@@ -14,12 +14,12 @@ const userManager = new UserManager({
 export function useAuth() {
     const user = ref<User | null>(null)
 
-    const login = () => {
-        userManager.signinSilent()
+    const login = async () => {
+        userManager.signinPopup()
     }
 
     const logout = () => {
-        userManager.signoutRedirect()
+        userManager.signoutSilent()
     }
 
     const getUser = async () => {
@@ -33,5 +33,5 @@ export function useAuth() {
         })
     })
 
-    return { user, login, logout }
+    return { user, login, logout, userManager }
 }

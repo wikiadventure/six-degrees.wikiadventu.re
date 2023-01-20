@@ -10,6 +10,8 @@ import MdiGithub from '~icons/mdi/github';
 import Thermometer from './components/cosmetic/Thermometer.vue';
 import Achievement from './components/cosmetic/Achievement.vue';
 import AuthSection from './components/auth/AuthSection.vue';
+import { useRoute } from './composables/route';
+useRoute();
 </script>
 <template>
   <HeatMeter search-app>
