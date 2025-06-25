@@ -1,7 +1,7 @@
 import { ref, reactive, watch, computed, nextTick } from 'vue';
 import { i18n, currentLang } from '../../i18n';
 import { loadPreview } from '../wiki/actions';
-import { checkGodwin, achieve, Achievement } from '../achievements/index';
+import { checkGodwin, achieve } from '../achievements/index';
 
 export const isFetching = ref(false);
 
@@ -38,29 +38,30 @@ export async function fetchAllShortestPaths() {
         wiki.result.time = 0;
         wiki.degree = 0;
         wiki.result.paths.push([]);
-        achieve(Achievement.AbsoluteZero);
+        achieve("AbsoluteZero");
         return;
     }
     isFetching.value = true;
     try {
-        const data:SearchResult = await fetch(`https://${i18n.global.locale.value}wiki-graph-serverless-lfpojybovq-od.a.run.app/all-shortest-path/${wiki.search.start.id}/to/${wiki.search.end.id}`)
+        const data:SearchResult = await fetch(`https://${i18n.global.locale.value}wiki-rust-graph-serverless-681973942252.europe-west9.run.app/all-shortest-path/${wiki.search.start.id}/to/${wiki.search.end.id}`)
                                         .then(r=>r.json());
+
+        const pages_ids = new Set(data.paths.flat());
         wiki.result.paths = data.paths.map(p=>p.map(i=>Number(i)));
-        wiki.result.time = data.time;
+        wiki.result.time = data.time_spent_ms;
         isFetching.value = false;
 
         setTimeout(() => checkGodwin(wiki.result.end), 2000);
 
-        if (wiki.result.paths[0]!=null) wiki.degree = wiki.result.paths[0]?.length + 1;
+        wiki.degree = data.shortest_path_length - 1;
 
-        if (wiki.degree == 6) setTimeout(() => achieve(Achievement.Hot), 5000);
-        if (wiki.degree > 6) setTimeout(() => achieve(Achievement.OverHeat), 5000);
-        if (wiki.result.paths.length == 42) setTimeout(() => achieve(Achievement.FourtyTwo), 5000);
-        if (wiki.result.paths.length > 9000) setTimeout(() => achieve(Achievement.Over9000), 5000);
+        if (wiki.degree == 6) setTimeout(() => achieve("Hot"), 5000);
+        if (wiki.degree > 6) setTimeout(() => achieve("OverHeat"), 5000);
+        // if (wiki.result.paths.length == 42) setTimeout(() => achieve(Achievement.FourtyTwo), 5000);
+        if (wiki.result.paths.length > 9000) setTimeout(() => achieve("Over9000"), 5000);
 
-        for (const [k,v] of Object.entries(data.idToTitle)) {
-            const id = Number(k);
-            if (wiki.previewMap.get(id)==null) wiki.previewMap.set(id, {title: v, loading: true });
+        for (const id of pages_ids.keys()) {
+            if (wiki.previewMap.get(id)==null) wiki.previewMap.set(id, { loading: true });
         }
         loadVisiblePathPreviews();
     } catch(e) {
@@ -106,8 +107,10 @@ export function swapSearch() {
 export const wikiUrl = computed(()=>`https://${currentLang.value}.wikipedia.org/wiki/`);
 
 type SearchResult = {
-    time: number,
-    idToTitle:{ [id: string]: string },
+    // idToTitle:{ [id: string]: string },
+    time_spent_ms: number,
+    num_paths: number,
+    shortest_path_length: number
     paths:number[][]
 }
 
@@ -139,7 +142,7 @@ export type WikiPage = {
     thumbnail: WikiThumbnail | null,
     loading?: undefined,
 } | {
-    title: string,
+    title?: string,
     description?:undefined,
     thumbnail?: undefined,
     loading: true,

@@ -29,7 +29,7 @@ watchDebounced(input, async t => {
 const focusElement = ref<HTMLElement>();
 function select(x:number) {
     id.value = x;
-    input.value = wiki.previewMap.get(x)!.title;
+    input.value = wiki.previewMap.get(x)!.title ?? "???";
 }
 //the set time out is a hack to prevent vue from remove (v-if) the suggestions before it handle the click event on it
 //nextTick don't work for some reason
@@ -55,7 +55,7 @@ watch(i18n.global.locale, v => {
         <preview :wiki-id="id" :key="id" disable-goto-wiki tabindex="-1"/>
     </div>
 </template>
-<style lang="scss">
+<style >
 [wiki-title-input] {
     --border: 1px solid rgba(var(--heat-rgb), .5);
     --border-focus: 1px solid var(--heat-color);

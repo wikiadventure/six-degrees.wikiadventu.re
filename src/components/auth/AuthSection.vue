@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { useAuth } from '../../composables/auth';
 
-const { login, user } = useAuth();
+const { getAccount, openLoginPopup, account, authStatus } = useAuth();
+getAccount();
 </script>
 <template>
    <section>
-        <button @click="login">sign in</button>
-        <div v-if="user">{{ user.profile.email }}</div>
+      <!-- <div>{{ authStatus }}</div>
+      <button v-if="authStatus == 'noSession'" @click="openLoginPopup">sign in</button>
+      <div>{{ account?.name }}</div> -->
+      <!-- <div v-else>not connected</div> -->
    </section>
 </template>
-<style lang="scss">
+<style >
 
 </style>

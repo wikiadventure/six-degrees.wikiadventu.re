@@ -1,7 +1,7 @@
 <template>
     <input theme-switch type="checkbox"/>
 </template>
-<style lang="scss">
+<style >
 [theme-switch] {
 
 }

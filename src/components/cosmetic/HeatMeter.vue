@@ -103,7 +103,7 @@ import { wiki } from '../../store/search';
         <slot></slot>
     </main>
 </template>
-<style lang="scss">
+<style >
 [heat-meter] {
     min-height: 200vh;
     background: transparent;

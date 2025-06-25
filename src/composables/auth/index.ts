@@ -1,37 +1,59 @@
-import { User, UserManager, WebStorageStateStore } from 'oidc-client-ts'
-import { onMounted, ref } from 'vue'
+import { ref, reactive, watch } from "vue";
+import { windowClose } from "../../utils";
+import { SixDegreeAccount } from "db-wikiadventu-re/types/surreal/query/getAccountOrCreate/six_degree";
+import { Account } from "db-wikiadventu-re/types/surreal/query/getAccountOrCreate";
+import { useStorage } from "@vueuse/core";
+import { apiClient } from "../db"
 
-const userManager = new UserManager({
-    authority: 'https://nervous-wozniak-xhrj507314.projects.oryapis.com',
-    client_id: '9c201800-416c-4551-977c-7598eb122ee2',
-    redirect_uri: "https://six-degrees.wikiadventu.re/callback",
-    response_type: 'code',
-    scope: 'openid profile offline_access',
-    post_logout_redirect_uri: window.location.origin,
-    userStore: new WebStorageStateStore({ store: window.localStorage })
-})
+type EmptyObj = Record<string | number | symbol, never>;
+
+export type OfflineSixDegreeAccount = Omit<SixDegreeAccount, keyof Account>
+
+export const storedAccount = useStorage<SixDegreeAccount | OfflineSixDegreeAccount>("account", {
+    six_degree: {
+        query_count: 0,
+        achievements: []
+    }
+});
+
+export const account = reactive<SixDegreeAccount | OfflineSixDegreeAccount>(storedAccount.value);
+
+watch(account, account => storedAccount.value = account, { deep: true });
+
+const authStatus = ref<AuthStatus>("processing");
+
+export async function getAccount() {
+    try {
+
+        console.log("get account");
+        Object.assign(account, await apiClient["get-account"]["six-degree"].$get().then(r=>r.json()))
+        console.log("get account : ", account);
+        authStatus.value = "connected";
+    } catch(e) {
+        const r = e as Response;
+        console.log(r);
+        authStatus.value = r?.status == 401 ? "noSession" : "error";
+    }
+}
+
+export async function openLoginPopup() {
+    try {
+        const popup = window.open(`${import.meta.env.VITE_LOGIN_URL}/login`,undefined,"popup");
+        await windowClose(popup);
+        await getAccount();
+    } catch(e) {
+
+    }
+
+}
 
 export function useAuth() {
-    const user = ref<User | null>(null)
-
-    const login = async () => {
-        userManager.signinPopup()
+    return {
+        getAccount,
+        account,
+        authStatus,
+        openLoginPopup
     }
-
-    const logout = () => {
-        userManager.signoutSilent()
-    }
-
-    const getUser = async () => {
-        user.value = await userManager.getUser()
-    }
-
-    onMounted(() => {
-        userManager.events.addUserLoaded(getUser)
-        userManager.events.addUserUnloaded(() => {
-            user.value = null
-        })
-    })
-
-    return { user, login, logout, userManager }
 }
+
+type AuthStatus = "connected" | "noSession" | "error" | "processing";

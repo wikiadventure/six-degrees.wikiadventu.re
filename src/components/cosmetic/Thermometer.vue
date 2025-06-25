@@ -11,7 +11,7 @@
         </div>
     </div>
 </template>
-<style lang="scss">
+<style>
 [thermo-meter] {
     position: relative;
     box-sizing: content-box;
@@ -19,7 +19,7 @@
     width: min(1000px, 90vw);
     border: 4px solid #222;
     background: #3330;
-    // background: linear-gradient(90deg, cyan , cyan 30%, yellow, orange, red);
+    /* background: linear-gradient(90deg, cyan , cyan 30%, yellow, orange, red); */
     background-size: 10% 100%;
     border-radius: 100vmax;
     filter: url(#GelA);

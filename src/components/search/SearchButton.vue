@@ -12,7 +12,7 @@ const { t } = useI18n({ useScope: 'local' });
     </GlassButton>
     <SearchLoader v-else/>
 </template>
-<style lang="scss">
+<style >
 [search-button] {
     &[disabled] {
         cursor: not-allowed;

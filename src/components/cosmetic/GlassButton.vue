@@ -1,4 +1,3 @@
-import component from '../../env';
 <script lang="ts" setup>
 const props = defineProps({
     type: {
@@ -10,7 +9,7 @@ const props = defineProps({
 <template>
     <component :is="props.type" glass-btn v-bind="$attrs"><slot></slot></component>
 </template>
-<style lang="scss">
+<style >
 [glass-btn] {
     appearance: none;
     border: none;

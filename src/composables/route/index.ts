@@ -6,12 +6,6 @@ import { useAuth } from '../auth';
 
 export function useRoute() {
 
-    const { userManager } = useAuth();
-
-    if (window.location.pathname == "/callback") {
-        userManager.signinPopupCallback(window.location.href);
-    }
-
     async function updateRoute(lang:string, start:number, end:number) {
         await nextTick();
         const query = start > 0 && end > 0 ? `${start}/${end}` : '';

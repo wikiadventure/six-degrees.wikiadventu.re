@@ -8,12 +8,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ory/client": "^1.1.5",
-    "@supabase/supabase-js": "^2.1.1",
-    "@vueuse/core": "^9.1.0",
-    "oidc-client-ts": "^2.2.0",
-    "vue": "^3.2.25",
-    "vue-i18n": "^9.2.2"
+    "@vueuse/core": "^13.4.0",
+    "hono": "^4.8.3",
+    "openapi-fetch": "^0.14.0",
+    "vue": "^3.5.17",
+    "vue-i18n": "^11.1.7"
   },
   "devDependencies": {
     "@iconify-json/codicon": "^1.1.17",
@@ -23,13 +22,16 @@
     "@iconify-json/maki": "^1.1.13",
     "@iconify-json/material-symbols": "^1.1.20",
     "@iconify-json/mdi": "^1.1.34",
-    "@intlify/vite-plugin-vue-i18n": "^6.0.1",
-    "@vitejs/plugin-vue": "^2.3.4",
-    "@vue/compiler-sfc": "^3.2.41",
-    "sass": "^1.54.4",
-    "typescript": "^4.5.4",
-    "unplugin-icons": "^0.14.12",
-    "vite": "^2.9.15",
-    "vue-tsc": "^0.34.7"
+    "@iconify-json/octicon": "^1.1.39",
+    "@intlify/unplugin-vue-i18n": "^6.0.8",
+    "@types/node": "^24.0.4",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "browserslist": "^4.25.1",
+    "db-wikiadventu-re": "github:wikiadventure/db.wikiadventu.re-types",
+    "lightningcss": "^1.30.1",
+    "typescript": "^5.8.3",
+    "unplugin-icons": "^22.1.0",
+    "vite": "^7.0.0",
+    "vue-tsc": "^2.2.10"
   }
 }

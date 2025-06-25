@@ -1,5 +1,4 @@
-// @ts-ignore
-import { Context } from "netlify:edge";
+import type { Context } from "https://edge.netlify.com";
 
 const langs = {
     en : "Shortest path between...",//English

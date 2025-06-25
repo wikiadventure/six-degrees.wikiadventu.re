@@ -23,7 +23,7 @@ const loading = ref<boolean>(false);
 function loadPreviewFromMap() {
   const p = wiki.previewMap.get(props.wikiId);
   if (p != null) {
-    title.value = p.title;
+    title.value = p.title ?? "???";
     loading.value = !!p.loading;
     if (!p.loading) {
       description.value = p.description!;
@@ -56,7 +56,7 @@ function openWiki() {
     <p>{{ description || "???" }}</p>
   </div>
 </template>
-<style lang="scss">
+<style >
 [wiki-preview] {
   display: grid;
   grid-template-columns: 80px 1fr;
@@ -70,9 +70,9 @@ function openWiki() {
   }
   backdrop-filter: blur(2px);
   background: #0001;
-  @at-root .body--dark & {
+  /* @at-root .body--dark & {
     background: #fff1;
-  }
+  } */
   &:hover, &:focus, &:focus-visible {
     z-index: 5;
   }

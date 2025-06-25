@@ -8,7 +8,7 @@
         <WikiTitleInput path-end   v-model:id="wiki.search.end.id"    v-model:input="wiki.search.end.input"  />
     </div>
 </template>
-<style lang="scss">
+<style >
 [search-input-section] {
     display: grid;
     gap: 2ch;

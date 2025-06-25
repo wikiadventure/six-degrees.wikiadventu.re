@@ -8,9 +8,10 @@ import HeatMeter from './components/cosmetic/HeatMeter.vue';
 import GlassButton from './components/cosmetic/GlassButton.vue';
 import MdiGithub from '~icons/mdi/github';
 import Thermometer from './components/cosmetic/Thermometer.vue';
-import Achievement from './components/cosmetic/Achievement.vue';
+import AchievementsPopup from './components/cosmetic/AchievementsPopup.vue';
 import AuthSection from './components/auth/AuthSection.vue';
 import { useRoute } from './composables/route';
+
 useRoute();
 </script>
 <template>
@@ -27,11 +28,11 @@ useRoute();
     <SearchButton/>
     <Thermometer/>
 		<SearchResult/>
-    <Achievement/>
+    <AchievementsPopup/>
 	</HeatMeter>
 </template>
-<style lang="scss">
-#app {
+<style >
+html {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -52,38 +53,43 @@ body {
   overflow-y: scroll;
 }
 
+h1 {
+  margin: 1em 15px 0 15px;
+  font-size: calc(3em + 5vw);
+  line-height: 1em;
+  text-align: center;
+}
+
 main {
-  h1 {
-    margin: 1em 15px 0 15px;
-    font-size: calc(3em + 5vw);
-    line-height: 1em;
-    text-align: center;
-  }
+
   &[search-app] {
     padding: 1em;
     display: flex;
     gap: 30px;
     flex-direction: column;
     align-items: center;
-    // align-content: ;
   }
-  > [lang-switch] {
-    position: absolute;
-    margin: 15px;
-    top: 0;
-    left: 0;
-  }
-  > [theme-switch] {
-    position: absolute;
-    margin: 15px;
-    top: 0;
-    right: 0;
-  }
-  [more-about] {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-  }
+
+}
+
+[lang-switch] {
+  position: absolute;
+  margin: 15px;
+  top: 0;
+  left: 0;
+}
+
+[theme-switch] {
+  position: absolute;
+  margin: 15px;
+  top: 0;
+  right: 0;
+}
+
+[more-about] {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
 }
 
 </style>

@@ -12,7 +12,7 @@
     </dialog>
   </div>
 </template>
-<style lang="scss">
+<style >
 [lang-switch] {
   border: 1px solid #fff;
   border-radius: 5px;

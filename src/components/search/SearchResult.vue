@@ -55,14 +55,14 @@ onUpdated(() => {
         <h2 v-else ><strong>{{ result.paths.length }}</strong> {{ t('paths', result.paths.length) }}</h2>
         <div search-result-paths>
             <div v-for="path in result.paths.slice(0, visiblePathCount)">
-                <preview :wiki-id="result.start" :key="result.start"/>
+                <!-- <preview :wiki-id="result.start" :key="result.start"/> -->
                 <preview v-for="pageId in path" debug  :wiki-id="pageId" :key="pageId"/>
-                <preview :wiki-id="result.end"   :key="result.end"/>
+                <!-- <preview :wiki-id="result.end"   :key="result.end"/> -->
             </div>
         </div>
     </section>
 </template>
-<style lang="scss">
+<style >
 [search-result] {
     display: flex;
     flex-direction: column;
@@ -84,7 +84,7 @@ onUpdated(() => {
         max-width: 100%;
         width: min(100%, 50ch);
         display: flex;
-        flex-direction: column;
+        flex-direction: column-reverse;
 
         & >:first-child {
             border-radius: 10px 10px 0 0;

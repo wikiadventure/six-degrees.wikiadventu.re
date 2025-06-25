@@ -17,7 +17,7 @@ const { thumbnail } = defineProps<{
       <IconQuestionMark/>
     </div>
 </template>
-<style lang="scss">
+<style >
 [wiki-thumbnail] {
     display: grid;
     grid-area: i;
