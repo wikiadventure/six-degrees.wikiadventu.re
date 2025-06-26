@@ -26,7 +26,7 @@ export async function getAccount() {
     try {
 
         console.log("get account");
-        Object.assign(account, await apiClient["get-account"]["six-degree"].$get().then(r=>r.json()))
+        // Object.assign(account, await apiClient["get-account"]["six-degree"].$get().then(r=>r.json()))
         console.log("get account : ", account);
         authStatus.value = "connected";
     } catch(e) {
@@ -38,9 +38,9 @@ export async function getAccount() {
 
 export async function openLoginPopup() {
     try {
-        const popup = window.open(`${import.meta.env.VITE_LOGIN_URL}/login`,undefined,"popup");
-        await windowClose(popup);
-        await getAccount();
+        // const popup = window.open(`${import.meta.env.VITE_LOGIN_URL}/login`,undefined,"popup");
+        // await windowClose(popup);
+        // await getAccount();
     } catch(e) {
 
     }
