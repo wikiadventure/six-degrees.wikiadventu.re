@@ -12,18 +12,15 @@ const langsKey = Object.keys(langs);
 
 export default async (req: Request, ctx: Context) => {
     const res:Response = await ctx.next();
-    console.log("Res headers : ", res.headers);
-    if (res.headers.get("content-type") != "text/html") return res;
+    if (!res.headers.get("content-type")?.startsWith("text/html")) return res;
     const url = new URL(req.url);
     const p = url.pathname.endsWith("/") ? url.pathname.slice(0, -1) : url.pathname;
     const [, lang, startS, endS, ...rest] = p.split(/\//);
-    console.log("lang start end : ", lang, startS, endS, rest);
     if (rest.length > 0) return res;
     if (!langsKey.includes(lang)) return res;
 
     const [start, end] = [parseInt(startS), parseInt(endS)];
     if (!(start > 0 && end > 0)) return res;
-    console.log("replacing");
     // @ts-ignore
     const description = langs[lang];
     const ogUrl = `https://og-six-degrees.wikiadventu.re/api/og?lang=${lang}&start=${start}&end=${end}`;
