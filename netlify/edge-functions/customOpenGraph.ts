@@ -1,4 +1,4 @@
-import type { Context } from "https://edge.netlify.com";
+import type { Context } from "@netlify/edge-functions";
 
 const langs = {
     en : "Shortest path between...",//English
@@ -21,7 +21,7 @@ export default async (req: Request, ctx: Context) => {
 
     const [start, end] = [parseInt(startS), parseInt(endS)];
     if (!(start > 0 && end > 0)) return res;
-
+    
     // @ts-ignore
     const description = langs[lang];
     const ogUrl = `https://og-six-degrees.wikiadventu.re/api/og?lang=${lang}&start=${start}&end=${end}`;
