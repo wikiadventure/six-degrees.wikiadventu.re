@@ -11,6 +11,7 @@ const langs = {
 const langsKey = Object.keys(langs);
 
 export default async (req: Request, ctx: Context) => {
+    console.log("Req & ctx : ", req, ctx);
     const res:Response = await ctx.next();
     if (res.headers.get("content-type") != "text/html") return res;
     const url = new URL(req.url);
