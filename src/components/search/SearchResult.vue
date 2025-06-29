@@ -84,7 +84,7 @@ onUpdated(() => {
         max-width: 100%;
         width: min(100%, 50ch);
         display: flex;
-        flex-direction: column-reverse;
+        flex-direction: column;
 
         & >:first-child {
             border-radius: 10px 10px 0 0;
