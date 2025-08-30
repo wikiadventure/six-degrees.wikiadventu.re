@@ -8,15 +8,14 @@ import { wiki } from '../../store/search';
 
 const props = defineProps<{
     id: number,
-    input: string
+    input: string,
+    inputName: string,
+    inputPlaceholder: string,
 }>()
 
 const emit = defineEmits(['update:id','update:input']);
 
 const { id, input } = useVModels(props, emit);
-
-const testId = ref(-1);
-const testInput = ref("");
 
 const inputFocus = ref(false);
 
@@ -43,10 +42,11 @@ function blur(){
 watch(i18n.global.locale, v => {
     suggestions.value = []
 })
+
 </script>
 <template>
     <div wiki-title-input ref="focusElement">
-        <input v-model="input" @focus="inputFocus = true"/>
+        <input v-model="input" @focus="inputFocus = true" :placeholder="props.inputPlaceholder" :name="props.inputName"/>
         <div wiki-title-suggest>
             <preview    v-for="s in suggestions" :wiki-id="s" :key="s"
                         @keypress.enter="select(s);blur()" @click.stop="select(s);blur()" 

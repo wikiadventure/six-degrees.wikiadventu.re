@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from '@vue/reactivity';
 import { wiki, wikiUrl } from '../../store/search';
-import { onWikiPreviewMapChange } from '../../store/search/onMapChange';
+import { useWikiPreviewMapChange } from '../../store/search/onMapChange';
 import WikiThumbnail from './WikiThumbnail.vue';
 import { WikiThumbnail as ThumbnailType } from '../../store/search';
 import SearchLoader from '../search/SearchLoader.vue';
@@ -32,7 +32,7 @@ function loadPreviewFromMap() {
   }
 }
 loadPreviewFromMap()
-onWikiPreviewMapChange(loadPreviewFromMap);
+useWikiPreviewMapChange(loadPreviewFromMap);
 
 function openWiki() {
   props.disableGotoWiki || window.open(wikiUrl.value + title.value.replaceAll(' ', '_'), "_blank");

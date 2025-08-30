@@ -3,9 +3,13 @@
         <p search-label>
             {{ t('label') }}
         </p>
-        <WikiTitleInput path-start v-model:id="wiki.search.start.id"  v-model:input="wiki.search.start.input"/>
+        <WikiTitleInput path-start v-model:id="wiki.search.start.id"  v-model:input="wiki.search.start.input"
+            :input-placeholder="t('start_page')" input-name="start-page-input"
+        />
         <p path-to>{{ t('to') }}<IconSwap tabindex="0" @click="swapSearch" @keypress.enter="swapSearch" /> </p>
-        <WikiTitleInput path-end   v-model:id="wiki.search.end.id"    v-model:input="wiki.search.end.input"  />
+        <WikiTitleInput path-end   v-model:id="wiki.search.end.id"    v-model:input="wiki.search.end.input"
+            :input-placeholder="t('end_page')" input-name="end-page-input"
+        >
     </div>
 </template>
 <style >
@@ -97,12 +101,18 @@ const { t } = useI18n({ useScope: 'local' });
 <i18n lang="yaml">
 en:
     label: Find all shortest paths from
+    start_page: Start page
+    end_page: End page
     to: to
 fr:
     label: Trouver tous les chemins les plus courts de
+    start_page: Page de départ
+    end_page: Page de d'arrivée
     to: à
 eo:
     label: Trovu ĉiujn plej mallongajn vojojn de
+    start_page: Hejmpaĝo
+    end_page: Alvenpaĝo
     to: al
 
 </i18n>

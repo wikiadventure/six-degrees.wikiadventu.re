@@ -15,7 +15,6 @@ export const langs = {
   // el : "Eλληνικά",//Greek
   // sv : "Svenska",//Swedish
 } as const;
-
 export const langsKey = Object.keys(langs);
 
 export type LangType = typeof langs;
