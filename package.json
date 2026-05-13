@@ -8,11 +8,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vueuse/core": "^13.4.0",
-    "hono": "^4.8.3",
-    "openapi-fetch": "^0.14.0",
-    "vue": "^3.5.17",
-    "vue-i18n": "^11.1.7"
+    "@vueuse/core": "^14.3.0",
+    "hono": "^4.12.18",
+    "openapi-fetch": "^0.17.0",
+    "vue": "^3.5.34",
+    "vue-i18n": "^11.4.2"
   },
   "devDependencies": {
     "@iconify-json/codicon": "^1.1.17",
@@ -25,14 +25,14 @@
     "@iconify-json/octicon": "^1.1.39",
     "@intlify/unplugin-vue-i18n": "^6.0.8",
     "@netlify/edge-functions": "^2.15.2",
-    "@types/node": "^24.0.4",
-    "@vitejs/plugin-vue": "^6.0.0",
+    "@types/node": "^25.7.0",
+    "@vitejs/plugin-vue": "^6.0.6",
     "browserslist": "^4.25.1",
     "db-wikiadventu-re": "github:wikiadventure/db.wikiadventu.re-types",
-    "lightningcss": "^1.30.1",
-    "typescript": "^5.8.3",
-    "unplugin-icons": "^22.1.0",
-    "vite": "^7.0.0",
-    "vue-tsc": "^2.2.10"
+    "lightningcss": "^1.32.0",
+    "typescript": "^6.0.3",
+    "unplugin-icons": "^23.0.1",
+    "vite": "^8.0.12",
+    "vue-tsc": "^3.2.9"
   }
 }
