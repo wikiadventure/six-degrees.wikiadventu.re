@@ -9,7 +9,7 @@
         <p path-to>{{ t('to') }}<IconSwap tabindex="0" @click="swapSearch" @keypress.enter="swapSearch" /> </p>
         <WikiTitleInput path-end   v-model:id="wiki.search.end.id"    v-model:input="wiki.search.end.input"
             :input-placeholder="t('end_page')" input-name="end-page-input"
-        >
+        />
     </div>
 </template>
 <style >
