@@ -43,7 +43,7 @@ export async function fetchAllShortestPaths() {
     }
     isFetching.value = true;
     try {
-        const data:SearchResult = await fetch(`https://${i18n.global.locale.value}wiki-rust-graph-serverless-681973942252.europe-west9.run.app/all-shortest-path/${wiki.search.start.id}/to/${wiki.search.end.id}`)
+        const data:SearchResult = await fetch(`https://${i18n.global.locale.value}.api.six-degrees.wikiadventu.re/all-shortest-path/${wiki.search.start.id}/to/${wiki.search.end.id}`)
                                         .then(r=>r.json());
 
         const pages_ids = new Set(data.paths.flat());
