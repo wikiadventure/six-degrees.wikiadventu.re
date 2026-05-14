@@ -32,10 +32,10 @@ onUpdated(() => {
 })
 </script>
 <template>
-    <section search-result ref="root" v-if="result.paths.length > 0 && start != null && end !=null">
+    <section search-result ref="root" v-if="result.paths_amount > 0 && start != null && end !=null">
         <i18n-t keypath="description" tag="p">
             <template v-slot:pathsLength>
-                <strong>{{ result.paths.length }}</strong> 
+                <strong>{{ result.paths_amount }}</strong> 
             </template>
             <template v-slot:degrees>
                 <strong>{{ wiki.degree }}</strong> 
@@ -51,8 +51,8 @@ onUpdated(() => {
             </template>
         </i18n-t>
         <h2>{{ wiki.degree }} {{ t('degrees', wiki.degree) }}</h2>
-        <h2 v-if="result.paths.length > visiblePathCount">{{ visiblePathCount }} {{ t('pathsAmong') }} <strong>{{ result.paths.length }}</strong></h2>
-        <h2 v-else ><strong>{{ result.paths.length }}</strong> {{ t('paths', result.paths.length) }}</h2>
+        <h2 v-if="result.paths_amount > visiblePathCount">{{ visiblePathCount }} {{ t('pathsAmong') }} <strong>{{ result.paths_amount }}</strong></h2>
+        <h2 v-else ><strong>{{ result.paths_amount }}</strong> {{ t('paths', result.paths_amount) }}</h2>
         <div search-result-paths>
             <div v-for="path in result.paths.slice(0, visiblePathCount)">
                 <!-- <preview :wiki-id="result.start" :key="result.start"/> -->

@@ -20,7 +20,8 @@ export const initial = ():SearchStore => ({
         start: -1,
         end: -1,
         time: -1,
-        paths: []
+        paths: [],
+        paths_amount: -1
     },
     degree: 2,
     previewMap: new Map(),
@@ -43,11 +44,13 @@ export async function fetchAllShortestPaths() {
     }
     isFetching.value = true;
     try {
-        const data:SearchResult = await fetch(`https://${i18n.global.locale.value}.api.six-degrees.wikiadventu.re/all-shortest-path/${wiki.search.start.id}/to/${wiki.search.end.id}`)
-                                        .then(r=>r.json());
+        const data:SearchResult =
+            await fetch(`https://${i18n.global.locale.value}.api.six-degrees.wikiadventu.re/all-shortest-path/${wiki.search.start.id}/to/${wiki.search.end.id}`)
+                .then(r=>r.json());
 
         const pages_ids = new Set(data.paths.flat());
         wiki.result.paths = data.paths.map(p=>p.map(i=>Number(i)));
+        wiki.result.paths_amount = data.num_paths;
         wiki.result.time = data.time_spent_ms;
         isFetching.value = false;
 
@@ -57,8 +60,8 @@ export async function fetchAllShortestPaths() {
 
         if (wiki.degree == 6) setTimeout(() => achieve("Hot"), 5000);
         if (wiki.degree > 6) setTimeout(() => achieve("OverHeat"), 5000);
-        // if (wiki.result.paths.length == 42) setTimeout(() => achieve(Achievement.FourtyTwo), 5000);
-        if (wiki.result.paths.length > 9000) setTimeout(() => achieve("Over9000"), 5000);
+        // if (wiki.result.paths_amount == 42) setTimeout(() => achieve(Achievement.FourtyTwo), 5000);
+        if (wiki.result.paths_amount > 9000) setTimeout(() => achieve("Over9000"), 5000);
 
         for (const id of pages_ids.keys()) {
             if (wiki.previewMap.get(id)==null) wiki.previewMap.set(id, { loading: true });
@@ -129,7 +132,8 @@ type SearchStore = {
         start:number,
         end:number,
         time:number,
-        paths:number[][]
+        paths:number[][],
+        paths_amount: number
     },
     degree: number,
     previewMap: Map<number, WikiPage>,
