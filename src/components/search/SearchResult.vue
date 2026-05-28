@@ -64,8 +64,11 @@ onUpdated(() => {
 </template>
 <style >
 [search-result] {
+    align-self: stretch;
     display: flex;
     flex-direction: column;
+    /* to expand wiki thumbnail without expanding the html container */
+    padding-bottom: 20ch;
     gap: 15px;
     > h2 {
         font-size: 2em;
@@ -73,7 +76,14 @@ onUpdated(() => {
         margin: 0;
     }
 }
+@media (min-width: 600px) {
+    [search-result-paths] {
+        padding-left: 10ch;
+        padding-right: 10ch;
+    }
+}
 [search-result-paths] {
+    align-self: stretch;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;

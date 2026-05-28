@@ -30,13 +30,14 @@ const { thumbnail } = defineProps<{
     &:not([no-img]) {
         filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff);
         &:hover {
-        z-index: 5;
-        isolation: isolate;
+            z-index: 5;
+            isolation: isolate;
         }
     }
 }
 
-[wiki-thumbnail]:not([no-img]):hover, :is(:focus, :focus-visible) [wiki-thumbnail] {
+[wiki-thumbnail]:not([no-img]):hover,
+:is(:focus, :focus-visible) [wiki-thumbnail] {
     img {
         max-width: 100vmin;
         max-height: 100vmin;
@@ -53,6 +54,15 @@ const { thumbnail } = defineProps<{
     object-fit: cover;
     border-radius: 3px;
     transition: filter 1s, max-height .5s 0s, max-width .5s 0s;
+}
+
+
+/* expand thumnail on hover to right instead of center*/
+@media (max-width: 600px) {
+    [wiki-thumbnail]>img {
+        left: 0;
+        top: 0;
+    }
 }
 
 [wiki-thumbnail][no-img] {
