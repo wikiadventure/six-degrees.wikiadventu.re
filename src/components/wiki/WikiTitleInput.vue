@@ -69,7 +69,7 @@ watch(i18n.global.locale, v => {
         height: 3em;
         font-size: 1.5em;
         text-align: center;
-        background: #0002;
+        background: #0005;
         color: #eee;
         text-overflow: ellipsis;
         &:is(:focus, :focus-visible) {
@@ -79,7 +79,7 @@ watch(i18n.global.locale, v => {
         }
     }
     > [wiki-preview] {
-        background: #0002;
+        background: #0005;
     }
     &:focus-within [wiki-title-suggest] {
         display: flex;

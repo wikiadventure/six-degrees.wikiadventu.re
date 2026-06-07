@@ -69,7 +69,7 @@ function openWiki() {
     border: none;
   }
   backdrop-filter: blur(2px);
-  background: #0001;
+  background: #0005;
   /* @at-root .body--dark & {
     background: #fff1;
   } */
