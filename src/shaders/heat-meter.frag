@@ -285,7 +285,7 @@ void main() {
     } else if (deg == 5) { 
         // 3D Textured Chunk Magma
         // Zoomed out slightly to show more variety across the screen
-        vec2 q = p * 5.5 + vec2(u_time * 0.05, -u_time * 0.03);
+        vec2 q = p * 10.5 + vec2(u_time * 0.05, -u_time * 0.03);
         
         // Evaluate height for a fake 3D terrain using domain warped noise
         vec2 eps = vec2(0.015, 0.0);
@@ -339,11 +339,85 @@ void main() {
         // Combine them
         color = mix(emissiveLava, litSlab, solidMask);
     } else if (deg >= 6) { 
-        // Sun surface
-        float n = fbm(p * 5.0 - u_time * 0.5);
-        float n2 = fbm(p * 10.0 + u_time);
-        color = mix(vec3(1.0, 0.3, 0.0), vec3(1.0, 0.9, 0.2), n);
-        color += vec3(1.0, 1.0, 0.8) * pow(n2, 3.0);
+        // Sun surface / Hot Star
+        
+        vec3 cLow, cMid, cHigh;
+        float sunspotIntensity = 1.0;
+        float extraGlow = 0.0;
+        
+        if (deg == 6) {
+            // Orange
+            cLow = vec3(0.6, 0.1, 0.0);
+            cMid = vec3(1.0, 0.4, 0.0);
+            cHigh = vec3(1.0, 0.7, 0.1);
+        } else if (deg == 7) {
+            // Red
+            cLow = vec3(0.5, 0.0, 0.0);
+            cMid = vec3(0.9, 0.1, 0.0);
+            cHigh = vec3(1.0, 0.3, 0.0);
+        } else if (deg == 8) {
+            // Yellow
+            cLow = vec3(0.8, 0.4, 0.0);
+            cMid = vec3(1.0, 0.8, 0.0);
+            cHigh = vec3(1.0, 1.0, 0.4);
+            sunspotIntensity = 0.5;
+        } else if (deg == 9) {
+            // Cyan-white
+            cLow = vec3(0.0, 0.5, 0.7);
+            cMid = vec3(0.4, 0.9, 1.0);
+            cHigh = vec3(0.9, 1.0, 1.0);
+            sunspotIntensity = 0.1;
+            extraGlow = 0.5;
+        } else {
+            // Cyan-blue (10+)
+            cLow = vec3(0.0, 0.1, 0.8);
+            cMid = vec3(0.0, 0.5, 1.0);
+            cHigh = vec3(0.4, 0.8, 1.0);
+            sunspotIntensity = 0.0;
+            extraGlow = 1.0;
+        }
+
+        // Solar plasma generation using heavy domain warping
+        vec2 q = p * 4.0; 
+        
+        // Deep nested FBM for highly detailed plasma turbulence
+        vec2 warp1 = vec2(
+            fbm(q + vec2(u_time * 0.05)),
+            fbm(q + vec2(13.5, 4.2) - u_time * 0.04)
+        );
+        vec2 warp2 = vec2(
+            fbm(q + warp1 * 2.0 + vec2(u_time * 0.1)),
+            fbm(q + warp1 * 2.5 - vec2(u_time * 0.15))
+        );
+        
+        float n = fbm(q + warp2 * 3.0);
+        
+        // Solar flares / magnetic field lines using ridged noise
+        float flares = ridged(q * 2.0 + warp2 * u_time * 0.1);
+        
+        // Granulation (the small convective bubbles on a star's surface)
+        // Using distance to cell center (v.z) to make the granules round, soft and bubble-like
+        vec3 v = voronoi(q * 6.0 + warp1);
+        float granulation = smoothstep(0.1, 0.7, 1.0 - v.z); 
+        
+        // Combine features
+        // Higher temp stars are generally more aggressive/turbulent visually
+        float surface = n * 0.5 + flares * 0.3 + granulation * 0.2;
+        
+        // Increase contrast for the boiling look
+        surface = smoothstep(0.2, 0.8, surface);
+        
+        // Map to temperature colors
+        vec3 starColor = mix(cLow, cMid, smoothstep(0.0, 0.5, surface));
+        starColor = mix(starColor, cHigh, smoothstep(0.4, 1.0, surface));
+        
+        // Add intense glowing and some dark spots (sunspots)
+        // Sunspots appear more strongly at lower temperatures
+        float sunspots = smoothstep(0.4, 0.2, n) * smoothstep(0.5, 0.2, flares);
+        starColor = mix(starColor, cLow * 0.2, sunspots * sunspotIntensity);
+        
+        // Extremely bright emissive multiplier
+        color = starColor * (1.5 + surface * 1.5 + extraGlow);
     } else {
         // fallback / degree 0
         color = vec3(0.0, 1.0, 0.0);
