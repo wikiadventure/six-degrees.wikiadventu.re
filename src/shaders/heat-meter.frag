@@ -283,13 +283,61 @@ void main() {
         
         color = shallowWater + vec3(0.8, 1.0, 0.9) * caustic + vec3(1.0) * glisten;
     } else if (deg == 5) { 
-        // Magma
-        vec2 q = vec2(0.0);
-        q.x = fbm(p + vec2(u_time * 0.1));
-        q.y = fbm(p + vec2(1.0, 1.0));
-        float n = fbm(p + q * 2.0 + u_time * 0.2);
-        color = mix(vec3(0.3, 0.0, 0.0), vec3(1.0, 0.5, 0.0), n);
-        color += smoothstep(0.6, 1.0, n) * vec3(1.0, 0.9, 0.2);
+        // 3D Textured Chunk Magma
+        // Zoomed out slightly to show more variety across the screen
+        vec2 q = p * 5.5 + vec2(u_time * 0.05, -u_time * 0.03);
+        
+        // Evaluate height for a fake 3D terrain using domain warped noise
+        vec2 eps = vec2(0.015, 0.0);
+        
+        // Base noise heavily contrasted to create flat slabs (high) and deep pools (low)
+        // Using fbm wrapped in itself for organic shapes
+        float n0 = fbm(q + fbm(q * 1.5 + u_time * 0.01));
+        float nx = fbm(q + eps + fbm((q + eps) * 1.5 + u_time * 0.01));
+        float ny = fbm(q + eps.yx + fbm((q + eps.yx) * 1.5 + u_time * 0.01));
+        
+        // Strong smoothstep forces values to chunks. 0.0 (lava pool floor) and 1.0 (crust slab peak)
+        float h = smoothstep(0.35, 0.65, n0);
+        float hx = smoothstep(0.35, 0.65, nx) - h;
+        float hy = smoothstep(0.35, 0.65, ny) - h;
+        
+        // Fake 3D Normal for the slab edges
+        vec3 normal = normalize(vec3(-hx * 8.0, -hy * 8.0, 1.0));
+        
+        // Fake 3D Lighting
+        vec3 lightDir = normalize(vec3(0.5, 0.8, 1.0));
+        float diff = max(dot(normal, lightDir), 0.0);
+        // Specular highlight to make the brown/black slab "reflect light"
+        float spec = pow(max(dot(reflect(-lightDir, normal), vec3(0.0, 0.0, 1.0)), 0.0), 24.0); 
+        
+        // Color Palette
+        // Add detailed orange/yellow noise to the lava pool so it's less flat
+        float lavaDetail = fbm(p * 10.0 - vec2(u_time * 0.1, u_time * 0.15));
+        vec3 colHot  = mix(vec3(0.8, 0.3, 0.0), vec3(1.2, 0.9, 0.1), lavaDetail); // Orange to Yellow liquid lava (Low value)
+        vec3 colRed  = vec3(0.9, 0.2, 0.0);     // Red hot 
+        vec3 colMelt = vec3(0.5, 0.15, 0.05);   // Melting brown slab (In between)
+        vec3 colSlab = vec3(0.12, 0.09, 0.07);  // Brown / black slab (High value)
+        
+        // Map height to albedo color
+        vec3 albedo = mix(colHot, colRed, smoothstep(0.0, 0.3, h));
+        albedo = mix(albedo, colMelt, smoothstep(0.3, 0.7, h));
+        albedo = mix(albedo, colSlab, smoothstep(0.7, 1.0, h));
+        
+        // Mask where the slab is solid vs melting/liquid
+        float solidMask = smoothstep(0.5, 0.9, h); 
+        
+        // Add subtle crust texture to the solid slab to make it look porous/rocky
+        float crustTex = fbm(p * 8.0);
+        albedo -= solidMask * crustTex * 0.03;
+        
+        // Apply diffuse lighting and specular reflections ONLY to the solid slab chunks
+        vec3 litSlab = albedo * (diff * 0.7 + 0.3) + vec3(1.0, 0.9, 0.8) * spec * 0.5;
+        
+        // Lava is fully emissive (unlit/glowing) and a bit brighter at the deepest parts
+        vec3 emissiveLava = albedo * mix(1.2, 1.0, h); 
+        
+        // Combine them
+        color = mix(emissiveLava, litSlab, solidMask);
     } else if (deg >= 6) { 
         // Sun surface
         float n = fbm(p * 5.0 - u_time * 0.5);

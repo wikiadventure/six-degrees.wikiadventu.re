@@ -19,7 +19,7 @@ const meterRef = ref<HTMLElement | null>(null);
 const usingFallback = ref(false);
 
 const clampedDegree = computed(() => {
-    return 1;
+    return 5;
     if (wiki.degree <= 0) {
         return 0;
     }
