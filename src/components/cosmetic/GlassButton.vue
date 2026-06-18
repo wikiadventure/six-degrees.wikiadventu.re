@@ -30,8 +30,8 @@ const props = defineProps({
         position: absolute;
         inset: 0;
         border-radius: 100vmax;
-        filter: url(#Glass);
-        background: var(--heat-color);
+        /* filter: url(#Glass); */
+        /* background: var(--heat-color); */
     }
     &:hover {
         outline: 1px solid  rgba(var(--heat-rgb), 1);

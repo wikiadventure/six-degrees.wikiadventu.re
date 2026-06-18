@@ -19,7 +19,7 @@ const meterRef = ref<HTMLElement | null>(null);
 const usingFallback = ref(false);
 
 const clampedDegree = computed(() => {
-    return 10;
+    return 3;
     if (wiki.degree <= 0) {
         return 0;
     }
@@ -49,6 +49,81 @@ let degreeUniform: WebGLUniformLocation | null = null;
 let timeUniform: WebGLUniformLocation | null = null;
 let startTime = performance.now();
 
+const isWebGL2Context = (
+    context: WebGLRenderingContext | WebGL2RenderingContext,
+): context is WebGL2RenderingContext => {
+    return typeof WebGL2RenderingContext !== 'undefined' && context instanceof WebGL2RenderingContext;
+};
+
+const getContextLabel = (context: WebGLRenderingContext | WebGL2RenderingContext) => {
+    return isWebGL2Context(context) ? 'webgl2' : 'webgl';
+};
+
+const formatShaderSource = (source: string) => {
+    return source
+        .split('\n')
+        .map((line, index) => `${String(index + 1).padStart(4, ' ')}: ${line}`)
+        .join('\n');
+};
+
+const logContextInfo = (context: WebGLRenderingContext | WebGL2RenderingContext) => {
+    const debugInfo = context.getExtension('WEBGL_debug_renderer_info');
+    const renderer = debugInfo
+        ? context.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
+        : context.getParameter(context.RENDERER);
+    const vendor = debugInfo
+        ? context.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL)
+        : context.getParameter(context.VENDOR);
+
+    console.info('[HeatMeter] WebGL context created', {
+        context: getContextLabel(context),
+        version: context.getParameter(context.VERSION),
+        shadingLanguageVersion: context.getParameter(context.SHADING_LANGUAGE_VERSION),
+        vendor,
+        renderer,
+    });
+};
+
+const getShaderSources = (context: WebGLRenderingContext | WebGL2RenderingContext) => {
+    if (isWebGL2Context(context)) {
+        return {
+            vertex: vertexShaderSource,
+            fragment: fragmentShaderSource,
+        };
+    }
+
+    return {
+        vertex: vertexShaderSource
+            .replace(/^#version 300 es\s*/m, '')
+            .replace(/\bin\b/g, 'attribute'),
+        fragment: fragmentShaderSource
+            .replace(/^#version 300 es\s*/m, '')
+            .replace(/^out vec4 fragmentColor;\s*/m, '')
+            .replace(/\bfragmentColor\b/g, 'gl_FragColor'),
+    };
+};
+
+const logGlError = (
+    context: WebGLRenderingContext | WebGL2RenderingContext,
+    stage: string,
+) => {
+    const error = context.getError();
+    if (error !== context.NO_ERROR) {
+        console.error('[HeatMeter] WebGL error', {
+            context: getContextLabel(context),
+            stage,
+            error,
+        });
+    }
+};
+
+const describeShaderType = (
+    context: WebGLRenderingContext | WebGL2RenderingContext,
+    type: number,
+) => {
+    return type === context.VERTEX_SHADER ? 'vertex' : 'fragment';
+};
+
 const scheduleRender = () => {
     if (!gl || !program || usingFallback.value || animationFrameId) {
         return;
@@ -72,17 +147,39 @@ const compileShader = (
     context.shaderSource(shader, source);
     context.compileShader(shader);
 
+    const infoLog = context.getShaderInfoLog(shader)?.trim();
+
     if (!context.getShaderParameter(shader, context.COMPILE_STATUS)) {
+        console.error('[HeatMeter] Shader compilation failed', {
+            context: getContextLabel(context),
+            shaderType: describeShaderType(context, type),
+            infoLog,
+            source: formatShaderSource(source),
+        });
         context.deleteShader(shader);
         return null;
+    }
+
+    if (infoLog) {
+        console.warn('[HeatMeter] Shader compilation warnings', {
+            context: getContextLabel(context),
+            shaderType: describeShaderType(context, type),
+            infoLog,
+        });
     }
 
     return shader;
 };
 
 const createProgram = (context: WebGLRenderingContext | WebGL2RenderingContext) => {
-    const vertexShader = compileShader(context, context.VERTEX_SHADER, vertexShaderSource);
-    const fragmentShader = compileShader(context, context.FRAGMENT_SHADER, fragmentShaderSource);
+    const shaderSources = getShaderSources(context);
+    console.info('[HeatMeter] Compiling shaders', {
+        context: getContextLabel(context),
+        vertex: formatShaderSource(shaderSources.vertex),
+        fragment: formatShaderSource(shaderSources.fragment),
+    });
+    const vertexShader = compileShader(context, context.VERTEX_SHADER, shaderSources.vertex);
+    const fragmentShader = compileShader(context, context.FRAGMENT_SHADER, shaderSources.fragment);
 
     if (!vertexShader || !fragmentShader) {
         if (vertexShader) {
@@ -105,12 +202,25 @@ const createProgram = (context: WebGLRenderingContext | WebGL2RenderingContext) 
     context.attachShader(shaderProgram, fragmentShader);
     context.linkProgram(shaderProgram);
 
+    const infoLog = context.getProgramInfoLog(shaderProgram)?.trim();
+
     context.deleteShader(vertexShader);
     context.deleteShader(fragmentShader);
 
     if (!context.getProgramParameter(shaderProgram, context.LINK_STATUS)) {
+        console.error('[HeatMeter] Program link failed', {
+            context: getContextLabel(context),
+            infoLog,
+        });
         context.deleteProgram(shaderProgram);
         return null;
+    }
+
+    if (infoLog) {
+        console.warn('[HeatMeter] Program link warnings', {
+            context: getContextLabel(context),
+            infoLog,
+        });
     }
 
     return shaderProgram;
@@ -156,6 +266,7 @@ const render = () => {
     gl.uniform1f(timeUniform, 12.34); // Fixed time for static render
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
+    logGlError(gl, 'render');
 };
 
 const cleanup = () => {
@@ -199,6 +310,7 @@ const setupWebGL = () => {
 
     gl = canvasRef.value.getContext('webgl2', contextAttributes);
     if (!gl) {
+        console.warn('[HeatMeter] WebGL2 unavailable, falling back to WebGL1');
         gl = canvasRef.value.getContext('webgl', contextAttributes);
     }
 
@@ -206,6 +318,8 @@ const setupWebGL = () => {
         usingFallback.value = true;
         return;
     }
+
+    logContextInfo(gl);
 
     program = createProgram(gl);
     if (!program) {
@@ -219,6 +333,16 @@ const setupWebGL = () => {
     heatColorUniform = gl.getUniformLocation(program, 'u_heatColor');
     degreeUniform = gl.getUniformLocation(program, 'u_degree');
     timeUniform = gl.getUniformLocation(program, 'u_time');
+
+    if (!resolutionUniform || !heatColorUniform || !degreeUniform || !timeUniform) {
+        console.error('[HeatMeter] Missing shader uniforms', {
+            context: getContextLabel(gl),
+            resolutionUniform: Boolean(resolutionUniform),
+            heatColorUniform: Boolean(heatColorUniform),
+            degreeUniform: Boolean(degreeUniform),
+            timeUniform: Boolean(timeUniform),
+        });
+    }
 
     if (positionAttribute < 0) {
         usingFallback.value = true;
@@ -249,6 +373,7 @@ const setupWebGL = () => {
 
     gl.enableVertexAttribArray(positionAttribute);
     gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0);
+    logGlError(gl, 'setup');
 
     resizeObserver = new ResizeObserver(() => {
         scheduleRender();

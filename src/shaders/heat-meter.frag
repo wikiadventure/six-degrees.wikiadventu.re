@@ -1,9 +1,13 @@
+#version 300 es
+
 precision highp float;
 
 uniform vec2 u_resolution;
 uniform vec3 u_heatColor;
 uniform float u_degree;
 uniform float u_time;
+
+out vec4 fragmentColor;
 
 const float SQRT3 = 1.732050808;
 
@@ -120,7 +124,7 @@ void main() {
     float edgeMask = smoothstep(0.0, 0.5, dist);
     
     if (edgeMask <= 0.0) {
-        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        fragmentColor = vec4(0.0, 0.0, 0.0, 1.0);
         return;
     }
 
@@ -432,5 +436,5 @@ void main() {
     blend_color += u_heatColor * neon * 1.5;
     // color += u_heatColor * neon * 1.5;
     
-    gl_FragColor = vec4(color * edgeMask, 1.0);
+    fragmentColor = vec4(color * edgeMask, 1.0);
 }
