@@ -30,7 +30,11 @@ export const initial = ():SearchStore => ({
 
 export const wiki = reactive<SearchStore>(initial());
 
+// Used for shaders
+export const searchSeed = ref(Math.random()*10_000);
+
 export async function fetchAllShortestPaths() {
+    searchSeed.value = Math.random()*10_000;
     wiki.result.start = wiki.search.start.id;
     wiki.result.end = wiki.search.end.id;
     wiki.result.time = -1;

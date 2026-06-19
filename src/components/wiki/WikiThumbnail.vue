@@ -11,7 +11,7 @@ const { thumbnail } = defineProps<{
 </script>
 <template>
     <div wiki-thumbnail v-if="thumbnail != null">
-      <img :src="thumbnail.source" :width="thumbnail.width!" :height="thumbnail.height!" />
+      <img :src="thumbnail.source" :width="thumbnail.width!" :height="thumbnail.height!" alt="wiki thumbnail" />
     </div>
     <div wiki-thumbnail no-img v-else >
       <IconQuestionMark/>

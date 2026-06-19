@@ -1,14 +1,34 @@
+<script lang="ts" setup>
+import { useI18n } from 'vue-i18n';
+import { wiki, swapSearch } from '../../store/search';
+import WikiTitleInput from '../wiki/WikiTitleInput.vue';
+import IconSwap from '~icons/mdi/swap-horizontal-bold';
+import { useTemplateRef } from 'vue';
+
+const { t } = useI18n({ useScope: 'local' });
+const startInput = useTemplateRef("startInput");
+const endInput = useTemplateRef("endInput");
+
+function focusEndInput() {
+    (endInput.value?.$el as HTMLDivElement).querySelector("input")?.focus();
+}
+
+function focusSearchButton() {
+    document.getElementById("search-button")?.focus();
+}
+
+</script>
 <template>
     <div search-input-section>
-        <p search-label>
+        <h2 search-label>
             {{ t('label') }}
-        </p>
+        </h2>
         <WikiTitleInput path-start v-model:id="wiki.search.start.id"  v-model:input="wiki.search.start.input"
-            :input-placeholder="t('start_page')" input-name="start-page-input"
+            :input-placeholder="t('start_page')" input-name="start-page-input" ref="startInput" @update:id="focusEndInput"
         />
         <p path-to>{{ t('to') }}<IconSwap tabindex="0" @click="swapSearch" @keypress.enter="swapSearch" /> </p>
         <WikiTitleInput path-end   v-model:id="wiki.search.end.id"    v-model:input="wiki.search.end.input"
-            :input-placeholder="t('end_page')" input-name="end-page-input"
+            :input-placeholder="t('end_page')" input-name="end-page-input" ref="endInput" @update:id="focusSearchButton"
         />
     </div>
 </template>
@@ -32,7 +52,7 @@
                                 "e e e";
         max-width: 70ch;
     }
-    > p {
+    > h2 {
         margin: 0;
         text-align: center;
         font-size: 1.5em;
@@ -90,14 +110,6 @@
     }
 }
 </style>
-<script lang="ts" setup>
-import { useI18n } from 'vue-i18n';
-import { wiki, swapSearch } from '../../store/search';
-import WikiTitleInput from '../wiki/WikiTitleInput.vue';
-import IconSwap from '~icons/mdi/swap-horizontal-bold';
-
-const { t } = useI18n({ useScope: 'local' });
-</script>
 <i18n lang="yaml">
 en:
     label: Find all shortest paths from

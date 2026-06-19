@@ -1,10 +1,22 @@
 
 <template>
-  <div lang-switch tabindex="0" @click="dialog?.showModal()" @keypress.enter="dialog?.showModal()">
-    <IconTranslate/> {{ locale }}
-    <dialog ref="dialog" @click.stop="dialog?.close()" @keydown.prevent.enter="select()" @keydown.prevent.up="incFocus(-1)" @keydown.prevent.down="incFocus()">
+  <div lang-switch tabindex="0"
+      @click="dialog?.showModal()"
+      @keypress.enter="dialog?.showModal()"
+      :aria-haspopup="'listbox'"
+      role="button"
+      :aria-expanded="dialog?.open ?? false"
+  >
+    <IconTranslate role="img" aria-label="Select language"/> {{ locale }}
+    <dialog ref="dialog"
+        @click.stop="dialog?.close()"
+        @keydown.prevent.enter="select()"
+        @keydown.prevent.up="incFocus(-1)"
+        @keydown.prevent.down="incFocus()"
+        @keydown.escape="dialog?.close()"
+    >
       <div role="listbox" aria-multiselectable="false">
-        <label><IconTranslate/> {{ langs[locale as Lang] }}</label>
+        <label><IconTranslate role="img" aria-label="Select language"/> {{ langs[locale as Lang] }}</label>
         <div v-for="[k,v] in langEntries" role="option" tabindex="-1" :aria-selected="k == locale" :is-focus="k == focusLang"
             @mouseenter="setFocus(k)"  @click="setFocus(k);select()"
         >{{ v }}</div>

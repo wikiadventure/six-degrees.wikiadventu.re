@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { wiki } from '../../store/search';
+import { searchSeed, wiki } from '../../store/search';
 import vertexShaderSource from '../../shaders/heat-meter.vert?raw';
 import fragmentShaderSource from '../../shaders/heat-meter.frag?raw';
 
 const palette: Record<number, [number, number, number]> = {
-    0: [0, 0, 0],
+    0: [20, 20, 180],
     1: [45, 151, 250],
     2: [34, 228, 238],
     3: [250, 246, 45],
@@ -19,10 +19,7 @@ const meterRef = ref<HTMLElement | null>(null);
 const usingFallback = ref(false);
 
 const clampedDegree = computed(() => {
-    return 3;
-    if (wiki.degree <= 0) {
-        return 0;
-    }
+    if (wiki.degree <= 0) return 0;
     return Math.round(wiki.degree);
 });
 
@@ -150,23 +147,23 @@ const compileShader = (
     const infoLog = context.getShaderInfoLog(shader)?.trim();
 
     if (!context.getShaderParameter(shader, context.COMPILE_STATUS)) {
-        console.error('[HeatMeter] Shader compilation failed', {
-            context: getContextLabel(context),
-            shaderType: describeShaderType(context, type),
-            infoLog,
-            source: formatShaderSource(source),
-        });
+        // console.error('[HeatMeter] Shader compilation failed', {
+        //     context: getContextLabel(context),
+        //     shaderType: describeShaderType(context, type),
+        //     infoLog,
+        //     source: formatShaderSource(source),
+        // });
         context.deleteShader(shader);
         return null;
     }
 
-    if (infoLog) {
-        console.warn('[HeatMeter] Shader compilation warnings', {
-            context: getContextLabel(context),
-            shaderType: describeShaderType(context, type),
-            infoLog,
-        });
-    }
+    // if (infoLog) {
+    //     console.warn('[HeatMeter] Shader compilation warnings', {
+    //         context: getContextLabel(context),
+    //         shaderType: describeShaderType(context, type),
+    //         infoLog,
+    //     });
+    // }
 
     return shader;
 };
@@ -208,20 +205,20 @@ const createProgram = (context: WebGLRenderingContext | WebGL2RenderingContext) 
     context.deleteShader(fragmentShader);
 
     if (!context.getProgramParameter(shaderProgram, context.LINK_STATUS)) {
-        console.error('[HeatMeter] Program link failed', {
-            context: getContextLabel(context),
-            infoLog,
-        });
+        // console.error('[HeatMeter] Program link failed', {
+        //     context: getContextLabel(context),
+        //     infoLog,
+        // });
         context.deleteProgram(shaderProgram);
         return null;
     }
 
-    if (infoLog) {
-        console.warn('[HeatMeter] Program link warnings', {
-            context: getContextLabel(context),
-            infoLog,
-        });
-    }
+    // if (infoLog) {
+    //     console.warn('[HeatMeter] Program link warnings', {
+    //         context: getContextLabel(context),
+    //         infoLog,
+    //     });
+    // }
 
     return shaderProgram;
 };
@@ -263,10 +260,10 @@ const render = () => {
     gl.uniform2f(resolutionUniform, canvasRef.value.width, canvasRef.value.height);
     gl.uniform3f(heatColorUniform, red / 255, green / 255, blue / 255);
     gl.uniform1f(degreeUniform, clampedDegree.value);
-    gl.uniform1f(timeUniform, 12.34); // Fixed time for static render
+    gl.uniform1f(timeUniform, searchSeed.value); // Fixed time for static render
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
-    logGlError(gl, 'render');
+    // logGlError(gl, 'render');
 };
 
 const cleanup = () => {
@@ -319,7 +316,7 @@ const setupWebGL = () => {
         return;
     }
 
-    logContextInfo(gl);
+    // logContextInfo(gl);
 
     program = createProgram(gl);
     if (!program) {
@@ -373,7 +370,7 @@ const setupWebGL = () => {
 
     gl.enableVertexAttribArray(positionAttribute);
     gl.vertexAttribPointer(positionAttribute, 2, gl.FLOAT, false, 0, 0);
-    logGlError(gl, 'setup');
+    // logGlError(gl, 'setup');
 
     resizeObserver = new ResizeObserver(() => {
         scheduleRender();

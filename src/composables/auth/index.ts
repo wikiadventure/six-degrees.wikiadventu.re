@@ -25,13 +25,13 @@ const authStatus = ref<AuthStatus>("processing");
 export async function getAccount() {
     try {
 
-        console.log("get account");
+        // console.log("get account");
         // Object.assign(account, await apiClient["get-account"]["six-degree"].$get().then(r=>r.json()))
-        console.log("get account : ", account);
+        // console.log("get account : ", account);
         authStatus.value = "connected";
     } catch(e) {
         const r = e as Response;
-        console.log(r);
+        // console.log(r);
         authStatus.value = r?.status == 401 ? "noSession" : "error";
     }
 }

@@ -7,7 +7,7 @@ import GlassButton from '../cosmetic/GlassButton.vue';
 const { t } = useI18n({ useScope: 'local' });
 </script>
 <template>
-    <GlassButton type="button" v-if="!isFetching" :disabled="wiki.search.start.id == -1 || wiki.search.end.id == -1" search-button @click="fetchAllShortestPaths">
+    <GlassButton id="search-button" type="button" v-if="!isFetching" :disabled="wiki.search.start.id == -1 || wiki.search.end.id == -1" search-button @click="fetchAllShortestPaths">
         {{ t('search') }} !
     </GlassButton>
     <SearchLoader v-else/>

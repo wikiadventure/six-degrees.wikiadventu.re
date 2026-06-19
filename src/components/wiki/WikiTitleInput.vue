@@ -39,6 +39,25 @@ function blur(){
         .forEach((e:any)=>e?.blur?.());
     focusElement.value?.querySelector('input')?.blur?.();
 }
+
+function focusPrevious() {
+    const previews = Array.from(focusElement.value!.querySelectorAll('[wiki-title-suggest] [wiki-preview]'));
+    if (!previews.length) return;
+    const idx = previews.indexOf(document.activeElement!);
+    const target = idx <= 0 ? previews[previews.length - 1] : previews[idx - 1];
+    //@ts-ignore
+    target.focus();
+}
+
+function focusNext() {
+    const previews = Array.from(focusElement.value!.querySelectorAll('[wiki-title-suggest] [wiki-preview]'));
+    if (!previews.length) return;
+    const idx = previews.indexOf(document.activeElement!);
+    const target = idx === -1 || idx >= previews.length - 1 ? previews[0] : previews[idx + 1];
+    //@ts-ignore
+    target.focus();
+}
+
 watch(i18n.global.locale, v => {
     suggestions.value = []
 })
@@ -46,11 +65,14 @@ watch(i18n.global.locale, v => {
 </script>
 <template>
     <div wiki-title-input ref="focusElement">
-        <input v-model="input" @focus="inputFocus = true" :placeholder="props.inputPlaceholder" :name="props.inputName"/>
+        <input v-model="input" @focus="inputFocus = true" :placeholder="props.inputPlaceholder" :name="props.inputName" :aria-label="props.inputPlaceholder"/>
         <div wiki-title-suggest>
             <preview    v-for="s in suggestions" :wiki-id="s" :key="s"
                         @keypress.enter="select(s);blur()" @click.stop="select(s);blur()" 
-                        disable-goto-wiki accesskey="enter" />
+                        disable-goto-wiki accesskey="enter"
+                        @keydown.up.prevent="focusPrevious"
+                        @keydown.down.prevent="focusNext"
+            />
         </div>
         <preview :wiki-id="id" :key="id" disable-goto-wiki tabindex="-1"/>
     </div>
