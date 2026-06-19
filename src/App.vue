@@ -58,6 +58,7 @@ h1 {
   font-size: calc(3em + 5vw);
   line-height: 1em;
   text-align: center;
+  text-shadow: 0 0 2px #000, 0 0 5px #000;
 }
 
 main {

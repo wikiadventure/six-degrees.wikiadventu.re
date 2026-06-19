@@ -111,6 +111,7 @@ float crystalHeight(vec2 p) {
 
 
 void main() {
+
     vec2 uv = gl_FragCoord.xy / u_resolution;
     
     // Aspect ratio corrected rounded corners
@@ -133,9 +134,14 @@ void main() {
 
     vec3 color = vec3(0.0);
     int deg = int(floor(u_degree + 0.5));
+    
+    // black screen on deg 0
+    if (deg == 0) {
+        fragmentColor = vec4(0.0, 0.0, 0.0, 1.0);
+        return;
+    }
 
     // We can maximize the quality of the shader since we only generate one frame
-
     if (deg == 1) {
         // High Quality Triangulated Crystal Approach
         // Multiple Voronoi layers combined to create faceted crystal structures
